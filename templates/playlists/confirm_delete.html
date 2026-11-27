@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ playlist.title }} — Music App{% endblock %}
+
+{% block content %}
+<div class="form-page-wrap">
+    <div class="card playlist-delete-card">
+        <h1>Delete this playlist?</h1>
+        <p><strong>{{ playlist.title }}</strong> and its saved song order will be removed. Catalogue songs will remain in the library.</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="playlist-form-actions">
+                <a href="{% url 'playlist_detail' playlist.id %}" class="btn btn-secondary">Keep Playlist</a>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

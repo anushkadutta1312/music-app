@@ -1,0 +1,16 @@
+{% with audio_url=song.audio_url %}
+    {% if audio_url %}
+        <button type="button" class="btn btn-primary btn-sm playback-track-button"
+                data-player-track
+                data-audio-url="{{ audio_url }}"
+                data-track-title="{{ song.title }}"
+                data-track-artist="{{ song.artists.all|join:', ' }}"
+                data-track-album="{{ song.album_name }}"
+                data-track-cover="{{ song.cover_image_url }}"
+                aria-label="Play {{ song.title }}">
+            <span aria-hidden="true">▶</span> Play
+        </button>
+    {% else %}
+        <span class="audio-unavailable" role="status">Audio sample not available</span>
+    {% endif %}
+{% endwith %}

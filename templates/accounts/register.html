@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Register — Music App{% endblock %}
+
+{% block content %}
+<div class="card card-auth">
+    <h2>Create an Account</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+        Join Music App to explore songs, create playlists, and save your favourite tracks.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error-text">{{ form.username.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_email">Email Address</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error-text">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="error-text">{{ form.password.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_confirm_password">Confirm Password</label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+                <div class="error-text">{{ form.confirm_password.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">Register Account</button>
+    </form>
+
+    <p style="margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+        Already have an account? <a href="{% url 'login' %}" style="color: var(--accent-primary);">Sign In</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Genres — Music App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <a href="{% url 'catalogue_manage' %}" style="color: var(--text-secondary); text-decoration: none; font-size: 13px;">Catalogue Hub</a>
+            <span style="color: var(--border-color);">&rsaquo;</span>
+            <span style="color: var(--text-primary); font-size: 13px; font-weight: 600;">Genres</span>
+        </div>
+        <h2>Manage Genres ({{ total_genres }})</h2>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'catalogue_manage' %}" class="btn btn-secondary">&larr; Back to Hub</a>
+        <a href="{% url 'genre_create' %}" class="btn btn-primary">+ Add New Genre</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Genre Name</th>
+                    <th>Description</th>
+                    <th>Tagged Songs</th>
+                    <th style="text-align: right; width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for genre in genres %}
+                    <tr>
+                        <td style="color: var(--text-secondary); font-size: 12px;">{{ genre.id }}</td>
+                        <td>
+                            <a href="{% url 'genre_detail' genre.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                <span class="badge-genre">{{ genre.name }}</span>
+                            </a>
+                        </td>
+                        <td style="color: var(--text-secondary); font-size: 13px;">{{ genre.description|truncatewords:15|default:"—" }}</td>
+                        <td>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                                {{ genre.song_count }} song{{ genre.song_count|pluralize }}
+                            </span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <a href="{% url 'genre_update' genre.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'genre_delete' genre.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                            No genres found.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

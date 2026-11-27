@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action_title }} — Music App{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary">&larr; Back to Artists</a>
+    </div>
+
+    <div class="card">
+        <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <span class="badge badge-admin">Admin Action</span>
+            <h2 style="margin-top: 6px;">{{ action_title }}</h2>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+                {% if is_edit %}
+                    Update artist details, biography, and promotional artwork.
+                {% else %}
+                    Register a new musical artist or band in the catalogue.
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_name">Artist / Band Name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}<div class="error-text">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_biography">Biography</label>
+                {{ form.biography }}
+                {% if form.biography.errors %}<div class="error-text">{{ form.biography.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image_url">Image URL</label>
+                {{ form.image_url }}
+                {% if form.image_url.errors %}<div class="error-text">{{ form.image_url.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-grid-two">
+                <div class="form-group">
+                    <label for="id_external_provider">External Provider</label>
+                    {{ form.external_provider }}
+                    {% if form.external_provider.errors %}<div class="error-text">{{ form.external_provider.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_external_artist_id">External Artist ID</label>
+                    {{ form.external_artist_id }}
+                    {% if form.external_artist_id.errors %}<div class="error-text">{{ form.external_artist_id.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}Save Changes{% else %}Create Artist{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

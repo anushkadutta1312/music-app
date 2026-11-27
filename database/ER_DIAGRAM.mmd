@@ -1,0 +1,87 @@
+erDiagram
+    AUTH_USER ||--o| ACCOUNTS_USERPROFILE : profile
+    AUTH_USER ||--o{ PROFILES_FAVOURITE : marks
+    CATALOG_SONG ||--o{ PROFILES_FAVOURITE : receives
+    AUTH_USER ||--o{ PLAYLISTS_PLAYLIST : owns
+    PLAYLISTS_PLAYLIST ||--o{ PLAYLISTS_PLAYLISTSONG : contains
+    CATALOG_SONG ||--o{ PLAYLISTS_PLAYLISTSONG : included_in
+    CATALOG_SONG ||--o{ CATALOG_SONGARTIST : linked
+    CATALOG_ARTIST ||--o{ CATALOG_SONGARTIST : linked
+    CATALOG_SONG ||--o{ CATALOG_SONGGENRE : classified
+    CATALOG_GENRE ||--o{ CATALOG_SONGGENRE : classifies
+
+    AUTH_USER {
+        INTEGER id PK
+    }
+    ACCOUNTS_USERPROFILE {
+        INTEGER id PK
+        INTEGER user_id FK, UK
+        VARCHAR display_name
+        TEXT bio
+        VARCHAR profile_image
+        VARCHAR role
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    CATALOG_GENRE {
+        INTEGER id PK
+        VARCHAR name UK
+        TEXT description
+        DATETIME created_at
+    }
+    CATALOG_ARTIST {
+        INTEGER id PK
+        VARCHAR name UK
+        TEXT biography
+        VARCHAR image_url
+        VARCHAR external_provider
+        VARCHAR external_artist_id
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    CATALOG_SONG {
+        INTEGER id PK
+        VARCHAR title
+        VARCHAR album_name
+        INTEGER duration_seconds
+        INTEGER release_year
+        VARCHAR cover_image_url
+        VARCHAR external_provider
+        VARCHAR external_track_id
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    CATALOG_SONGARTIST {
+        INTEGER id PK
+        INTEGER song_id FK
+        INTEGER artist_id FK
+        VARCHAR role
+    }
+    CATALOG_SONGGENRE {
+        INTEGER id PK
+        INTEGER song_id FK
+        INTEGER genre_id FK
+    }
+    PROFILES_FAVOURITE {
+        INTEGER id PK
+        INTEGER user_id FK
+        INTEGER song_id FK
+        DATETIME created_at
+    }
+    PLAYLISTS_PLAYLIST {
+        INTEGER id PK
+        INTEGER owner_id FK
+        VARCHAR title
+        TEXT description
+        VARCHAR cover_image_url
+        BOOLEAN is_public
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    PLAYLISTS_PLAYLISTSONG {
+        INTEGER id PK
+        INTEGER playlist_id FK
+        INTEGER song_id FK
+        INTEGER position
+        DATETIME added_at
+    }

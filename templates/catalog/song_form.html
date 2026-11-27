@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action_title }} — Music App{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'song_manage_list' %}" class="btn btn-secondary">&larr; Back to Songs</a>
+    </div>
+
+    <div class="card">
+        <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <span class="badge badge-admin">Admin Action</span>
+            <h2 style="margin-top: 6px;">{{ action_title }}</h2>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+                {% if is_edit %}
+                    Update track metadata and Many-to-Many artist and genre associations.
+                {% else %}
+                    Add a new track to the music catalogue with its artists and genres.
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_title">Song Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="error-text">{{ form.title.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-grid-two">
+                <div class="form-group">
+                    <label for="id_album_name">Album Name</label>
+                    {{ form.album_name }}
+                    {% if form.album_name.errors %}<div class="error-text">{{ form.album_name.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_duration_seconds">Duration (Seconds) *</label>
+                    {{ form.duration_seconds }}
+                    {% if form.duration_seconds.errors %}<div class="error-text">{{ form.duration_seconds.errors.0 }}</div>{% endif %}
+                    <div class="form-text">Must be strictly greater than 0.</div>
+                </div>
+            </div>
+
+            <div class="form-grid-two">
+                <div class="form-group">
+                    <label for="id_release_year">Release Year</label>
+                    {{ form.release_year }}
+                    {% if form.release_year.errors %}<div class="error-text">{{ form.release_year.errors.0 }}</div>{% endif %}
+                    <div class="form-text">&ge; 1900 if provided.</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_external_provider">External Provider</label>
+                    {{ form.external_provider }}
+                    {% if form.external_provider.errors %}<div class="error-text">{{ form.external_provider.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_cover_image_url">Cover Image URL</label>
+                {{ form.cover_image_url }}
+                {% if form.cover_image_url.errors %}<div class="error-text">{{ form.cover_image_url.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_external_track_id">External Track Identifier</label>
+                {{ form.external_track_id }}
+                {% if form.external_track_id.errors %}<div class="error-text">{{ form.external_track_id.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_audio_file">Local MP3 Sample (Optional)</label>
+                {{ form.audio_file }}
+                {% if form.audio_file.errors %}<div class="error-text">{{ form.audio_file.errors.0 }}</div>{% endif %}
+                <div class="form-text">Upload only audio you have permission to use. Accepted format: MP3.</div>
+            </div>
+
+            <!-- Many-to-Many Associations -->
+            <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-top: 18px;">
+                <h3 style="font-size: 16px; margin-bottom: 12px;">Relational Associations (Junction Tables)</h3>
+
+                <div class="form-group">
+                    <label for="id_artists">Artists *</label>
+                    {{ form.artists }}
+                    {% if form.artists.errors %}<div class="error-text">{{ form.artists.errors.0 }}</div>{% endif %}
+                    <div class="form-text">Hold Ctrl / Cmd to select multiple artists. Creates rows in <code>SongArtist</code>.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_genres">Genres *</label>
+                    {{ form.genres }}
+                    {% if form.genres.errors %}<div class="error-text">{{ form.genres.errors.0 }}</div>{% endif %}
+                    <div class="form-text">Hold Ctrl / Cmd to select multiple genres. Creates rows in <code>SongGenre</code>.</div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <a href="{% url 'song_manage_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}Save Changes{% else %}Create Song{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

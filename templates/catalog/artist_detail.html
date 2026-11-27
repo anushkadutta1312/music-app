@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ artist.name }} — Music App{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; Back to Catalogue</a>
+</div>
+
+<div class="card" style="display: flex; gap: 28px; flex-wrap: wrap;">
+    <div style="width: 180px; height: 180px; background: var(--bg-secondary); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid var(--border-color);">
+        {% if artist.image_url %}
+            <img src="{{ artist.image_url }}" alt="{{ artist.name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="font-size: 54px; color: var(--border-color); display: none;">🎤</span>
+        {% else %}
+            <span style="font-size: 54px; color: var(--border-color);">🎤</span>
+        {% endif %}
+    </div>
+
+    <div style="flex: 1; min-width: 280px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 4px;">{{ artist.name }}</h1>
+                <p style="color: var(--text-secondary); font-size: 14px;">
+                    {{ song_count }} track{{ song_count|pluralize }} in catalogue
+                </p>
+            </div>
+            {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+                <div style="display: flex; gap: 8px;">
+                    <a href="{% url 'artist_update' artist.id %}" class="btn btn-secondary btn-sm">Edit Artist</a>
+                    <a href="{% url 'artist_delete' artist.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if artist.biography %}
+            <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 12px;">
+                <h4 style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px;">Biography</h4>
+                <p style="color: var(--text-primary); font-size: 14px; line-height: 1.6;">{{ artist.biography }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h3>Songs by {{ artist.name }}</h3>
+    {% if songs %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Album</th>
+                        <th>Duration</th>
+                        <th>Year</th>
+                        <th>Genres</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for song in songs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'song_detail' song.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                    {{ song.title }}
+                                </a>
+                            </td>
+                            <td>{{ song.album_name|default:"—" }}</td>
+                            <td>{{ song.formatted_duration }}</td>
+                            <td>{{ song.release_year|default:"—" }}</td>
+                            <td>
+                                {% for g in song.genres.all %}
+                                    <span class="badge-genre">{{ g.name }}</span>
+                                {% endfor %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'song_detail' song.id %}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">No songs registered for this artist yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

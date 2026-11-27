@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ playlist.title }} — Music App{% endblock %}
+
+{% block content %}
+<div class="playlist-page-header">
+    <div>
+        <p><a href="{% url 'playlist_list' %}">My Playlists</a> /</p>
+        <h1>{{ playlist.title }}</h1>
+        <p>{{ playlist.description|default:"No description for this playlist." }}</p>
+        <p><strong data-playlist-song-count>{{ song_count }}</strong> song{{ song_count|pluralize }}</p>
+    </div>
+    <div class="playlist-card-actions">
+        <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-secondary">Edit Playlist</a>
+        <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete Playlist</a>
+    </div>
+</div>
+
+<div class="playlist-detail-list" data-playlist-track-list data-player-queue aria-label="Playlist playback queue">
+    {% if playable_count %}
+        <div class="playlist-playback-toolbar">
+            <button type="button" class="btn btn-primary" data-player-play-all>
+                <span aria-hidden="true">▶</span> Play All ({{ playable_count }} playable)
+            </button>
+        </div>
+    {% elif tracks %}
+        <p class="audio-unavailable playlist-no-playable" role="status">This playlist has no available audio samples to play.</p>
+    {% endif %}
+    {% for track in tracks %}
+        <article class="card playlist-track" data-playlist-track data-song-id="{{ track.song_id }}">
+            <span class="playlist-track-position" data-track-position>{{ track.position }}</span>
+            <div class="playlist-track-main">
+                <a href="{% url 'song_detail' track.song.id %}" class="playlist-track-title">{{ track.song.title }}</a>
+                <div class="playlist-track-meta">
+                    <span>{% for artist in track.song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}</span>
+                    <span>{{ track.song.album_name|default:"Single / Standalone" }}</span>
+                    <span>{{ track.song.formatted_duration }}</span>
+                    {% if track.song.release_year %}<span>{{ track.song.release_year }}</span>{% endif %}
+                    {% for genre in track.song.genres.all %}<span class="badge-genre">{{ genre.name }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="playlist-track-actions">
+                {% with song=track.song %}
+                    {% include 'catalog/_playback_track_control.html' with song=song %}
+                {% endwith %}
+                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move>
+                    {% csrf_token %}<input type="hidden" name="action" value="move_up">
+                    <button type="submit" class="btn btn-secondary btn-sm" aria-label="Move {{ track.song.title }} up" {% if forloop.first %}disabled{% endif %}>Move Up</button>
+                </form>
+                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move>
+                    {% csrf_token %}<input type="hidden" name="action" value="move_down">
+                    <button type="submit" class="btn btn-secondary btn-sm" aria-label="Move {{ track.song.title }} down" {% if forloop.last %}disabled{% endif %}>Move Down</button>
+                </form>
+                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-remove>
+                    {% csrf_token %}<input type="hidden" name="action" value="remove">
+                    <button type="submit" class="btn btn-danger btn-sm" aria-label="Remove {{ track.song.title }}">Remove</button>
+                </form>
+            </div>
+        </article>
+    {% endfor %}
+</div>
+<div class="card playlist-empty-state" data-playlist-empty {% if tracks %}hidden{% endif %}>
+    <div class="playlist-empty-icon">♫</div>
+    <h2>This playlist is empty</h2>
+    <p>Open a song in the catalogue and add it to this playlist.</p>
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-primary">Browse Music</a>
+</div>
+<p data-playlist-page-feedback role="status" aria-live="polite"></p>
+<p class="playlist-back-link"><a href="{% url 'catalogue_browse' %}">Browse more songs</a></p>
+{% endblock %}

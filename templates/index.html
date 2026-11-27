@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Music App — Welcome{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 40px auto;">
+    <span class="badge badge-success">Music Discovery • Playlists • Sample Playback</span>
+    <h1 style="margin-top: 12px;">Music App</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        A database-driven Full Stack Music Discovery and Playlist Management Application.
+    </p>
+
+    <h3 style="margin-top: 20px;">Current Project Progress:</h3>
+    <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
+        <li><strong style="color: var(--text-primary);">Authentication &amp; User Roles:</strong> Completed. Secure registration, login, logout, and server-side role enforcement (<code>ADMIN</code> vs. <code>MEMBER</code>).</li>
+        <li><strong style="color: var(--text-primary);">Database Architecture:</strong> Completed and normalized (1NF, 2NF, 3NF) with 9 application tables and database-level constraints.</li>
+        <li><strong style="color: var(--text-primary);">Music Catalogue:</strong> Browse, search, and filter songs by artist and genre.</li>
+        <li><strong style="color: var(--text-primary);">Personal Collections:</strong> Save favourites and curate private playlists.</li>
+        <li><strong style="color: var(--text-primary);">Playback:</strong> Play credited sample tracks in the shared player.</li>
+        <li><strong style="color: var(--text-primary);">Project Status:</strong> Phases 1–12 are complete; final quality assurance is underway.</li>
+    </ul>
+
+    <h3 style="margin-top: 20px;">Configured Applications:</h3>
+    <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
+        <li><strong style="color: var(--text-primary);">accounts:</strong> User authentication, registration, login/logout, profile management, and role-based permissions.</li>
+        <li><strong style="color: var(--text-primary);">catalog:</strong> Artists, songs, genres, catalogue management, and search.</li>
+        <li><strong style="color: var(--text-primary);">playlists:</strong> Personal playlist curation, management, and track ordering.</li>
+        <li><strong style="color: var(--text-primary);">profiles:</strong> User profile information and favourite song bookmarks.</li>
+    </ul>
+
+    {% if not user.is_authenticated %}
+        <div class="home-actions" style="margin-top: 24px; display: flex; gap: 12px;">
+            <a href="{% url 'login' %}" class="btn btn-primary">Sign In</a>
+            <a href="{% url 'register' %}" class="btn btn-secondary">Create Account</a>
+        </div>
+    {% else %}
+        <div class="home-actions" style="margin-top: 24px; display: flex; gap: 12px;">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+            <a href="{% url 'profile' %}" class="btn btn-secondary">View Profile</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

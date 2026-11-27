@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/dashboard/">Dashboard</a></li>
+
+                
+
+                <li><a href="/accounts/profile/">My Profile</a></li>
+                <li>
+                    <form method="POST" action="/accounts/logout/" style="display:inline;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="egHWsgQ5jjko0zePoRU6emPuNrSlwfRnBxl3iG3e0YyAZ2LFXcHbG8OorDw8HdWU">
+                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout (alex_rhythm)</button>
+                    </form>
+                </li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div style="margin-bottom: 24px;">
+    <h2>Welcome back, Alex Rivera!</h2>
+    <p style="color: var(--text-secondary);">
+        Explore music, curate your playlists, and discover new songs.
+    </p>
+</div>
+
+<!-- Quick Metrics -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">My Playlists</div>
+        <div class="metric-value">2</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">My Favourites</div>
+        <div class="metric-value">5</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Account Role</div>
+        <div style="margin-top: 10px;">
+            <span class="badge badge-member">MEMBER</span>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <!-- My Recent Playlists -->
+    <div class="card">
+        <h3>My Playlists</h3>
+        
+            <ul style="list-style: none; margin-top: 12px;">
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Late Night Vibes</strong><br>
+                            <small style="color: var(--text-secondary);">4 songs • Private</small>
+                        </div>
+                    </li>
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Indie Discoveries</strong><br>
+                            <small style="color: var(--text-secondary);">5 songs • Public</small>
+                        </div>
+                    </li>
+                
+            </ul>
+        
+    </div>
+
+    <!-- My Recent Favourites -->
+    <div class="card">
+        <h3>Recent Favourites</h3>
+        
+            <ul style="list-style: none; margin-top: 12px;">
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Dog Days Are Over</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: 252s</small>
+                        </div>
+                    </li>
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Skinny Love</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: 239s</small>
+                        </div>
+                    </li>
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Smells Like Teen Spirit</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: 301s</small>
+                        </div>
+                    </li>
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">505</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: 253s</small>
+                        </div>
+                    </li>
+                
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">Do I Wanna Know?</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: 272s</small>
+                        </div>
+                    </li>
+                
+            </ul>
+        
+    </div>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

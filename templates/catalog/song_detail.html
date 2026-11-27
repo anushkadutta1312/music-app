@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ song.title }} — Music App{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; Back to Catalogue</a>
+</div>
+
+<div class="card" style="display: flex; gap: 32px; flex-wrap: wrap;">
+    <div style="width: 220px; height: 220px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--border-color);">
+        {% if song.cover_image_url %}
+            <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="font-size: 64px; color: var(--border-color); display: none;">🎵</span>
+        {% else %}
+            <span style="font-size: 64px; color: var(--border-color);">🎵</span>
+        {% endif %}
+    </div>
+
+    <div style="flex: 1; min-width: 280px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">{{ song.title }}</h1>
+                <p style="font-size: 16px; color: var(--text-secondary);">
+                    By
+                    {% for sa in song_artists %}
+                        <a href="{% url 'artist_detail' sa.artist.id %}" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">
+                            {{ sa.artist.name }}
+                        </a>
+                        {% if sa.role and sa.role != 'Primary' %}
+                            <span class="badge" style="font-size: 10px; margin-left: 2px;">{{ sa.role }}</span>
+                        {% endif %}
+                        {% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        <span style="color: #64748b;">Unknown Artist</span>
+                    {% endfor %}
+                </p>
+                <div class="song-detail-playback" data-player-queue aria-label="Song playback">
+                    {% include 'catalog/_playback_track_control.html' with song=song %}
+                </div>
+            </div>
+            {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+                <div style="display: flex; gap: 8px;">
+                    <a href="{% url 'song_update' song.id %}" class="btn btn-secondary btn-sm">Edit Song</a>
+                    <a href="{% url 'song_delete' song.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin: 20px 0; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
+            <div>
+                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Album</span>
+                <strong style="color: #ffffff;">{{ song.album_name|default:"Single / Standalone" }}</strong>
+            </div>
+            <div>
+                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Duration</span>
+                <strong style="color: #ffffff;">{{ song.formatted_duration }} ({{ song.duration_seconds }}s)</strong>
+            </div>
+            <div>
+                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Release Year</span>
+                <strong style="color: #ffffff;">{{ song.release_year|default:"—" }}</strong>
+            </div>
+            <div>
+                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Provider</span>
+                <strong style="color: #ffffff;">{{ song.external_provider|default:"Local" }}</strong>
+            </div>
+            <div style="margin-top: 12px;">
+                {% include 'profiles/_favourite_button.html' with song=song is_favourited=is_favourited %}
+            </div>
+        </div>
+
+        <div>
+            <span style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 8px;">Genres</span>
+            <div>
+                {% for genre in song_genres %}
+                    <a href="{% url 'genre_detail' genre.id %}" class="badge-genre" style="text-decoration: none; font-size: 12px; padding: 4px 10px;">
+                        {{ genre.name }}
+                    </a>
+                {% empty %}
+                    <span style="color: #64748b; font-size: 13px;">No genres categorized.</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="playlist-add-panel">
+            <h3>Add to a playlist</h3>
+            {% if owned_playlists %}
+                <form method="post" action="{% url 'playlist_add_song' song.id %}" data-playlist-form>
+                    {% csrf_token %}
+                    <label for="playlist-choice-{{ song.id }}">Choose one of your playlists</label>
+                    <select id="playlist-choice-{{ song.id }}" class="form-control" name="playlist_id" required>
+                        {% for playlist in owned_playlists %}
+                            <option value="{{ playlist.id }}">{{ playlist.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Add song</button>
+                    <span data-playlist-feedback role="status" aria-live="polite"></span>
+                </form>
+            {% else %}
+                <p>You do not have a playlist yet. <a href="{% url 'playlist_create' %}">Create one</a> to save this song.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+# Python & Django .gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+secrets.json
+local_settings.py
+
+# Django runtime data
+# Note: SQLite database file is ignored during production/collaboration to prevent binary conflicts
+*.sqlite3
+db.sqlite3-journal
+*.bak
+database/backups/
+
+# Media / Uploaded files
+media/
+!media/
+media/*
+!media/audio/
+media/audio/*
+!media/audio/ATTRIBUTION.md
+!media/audio/samples/
+media/audio/samples/*
+!media/audio/samples/*.mp3
+
+# Static files collected
+staticfiles/
+
+# IDE and Editor specific
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+temp_chrome_profile/

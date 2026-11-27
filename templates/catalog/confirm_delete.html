@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Deletion: {{ item_name }} — Music App{% endblock %}
+
+{% block content %}
+<div style="max-width: 520px; margin: 40px auto;">
+    <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 48px; margin-bottom: 8px;">⚠️</div>
+            <span class="badge badge-admin">Irreversible Deletion</span>
+            <h2 style="margin-top: 8px; color: #f87171;">Delete {{ item_type }}?</h2>
+        </div>
+
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;">Target Record</div>
+            <div style="font-size: 18px; font-weight: 700; color: #ffffff;">{{ item_name }}</div>
+        </div>
+
+        {% if impact_details %}
+            <div class="alert alert-warning" style="font-size: 13px; line-height: 1.5; margin-bottom: 24px;">
+                <strong>Relational Integrity Notice:</strong><br>
+                {{ impact_details }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <a href="{% url cancel_url %}" class="btn btn-secondary" style="flex: 1; text-align: center;">Cancel</a>
+                <button type="submit" class="btn btn-danger" style="flex: 1;">Confirm Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

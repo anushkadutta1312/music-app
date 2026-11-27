@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Catalogue — Music App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <h2 style="font-size: 24px; font-weight: 700; color: #ffffff;">🎵 Music Catalogue</h2>
+        <p style="color: var(--text-secondary); font-size: 14px;">
+            Explore songs, albums, artists, and music genres in the library.
+        </p>
+    </div>
+    {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+        <div>
+            <a href="{% url 'catalogue_manage' %}" class="btn btn-secondary">⚙️ Catalogue Management</a>
+            <a href="{% url 'song_create' %}" class="btn btn-primary">+ Add New Song</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="filter-card">
+    <form method="GET" action="{% url 'catalogue_browse' %}">
+        <div class="filter-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="id_q" style="font-size: 11px;">Search Catalogue</label>
+                {{ filter_form.q }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="id_genre" style="font-size: 11px;">Filter Genre</label>
+                {{ filter_form.genre }}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="id_artist" style="font-size: 11px;">Filter Artist</label>
+                {{ filter_form.artist }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="height: 42px; width: 100%;">Filter</button>
+            </div>
+            {% if has_active_filters %}
+                <div>
+                    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary" style="height: 42px; width: 100%; display: flex; align-items: center; justify-content: center;">Clear</a>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Filter Results Summary -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div style="color: var(--text-secondary); font-size: 14px;">
+        Showing <strong>{{ songs|length }}</strong> of <strong>{{ total_results }}</strong> track{{ total_results|pluralize }}
+        {% if q_query %} matching "<em>{{ q_query }}</em>"{% endif %}
+    </div>
+    <div style="font-size: 13px; color: var(--text-secondary);">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </div>
+</div>
+
+<!-- Songs Grid -->
+{% if songs %}
+    <div class="music-grid" data-player-queue aria-label="Catalogue page playback queue">
+        {% for song in songs %}
+            <div class="song-card">
+                <div class="song-card-cover">
+                    {% if song.cover_image_url %}
+                        <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="song-card-placeholder" style="display: none;">🎵</span>
+                    {% else %}
+                        <span class="song-card-placeholder">🎵</span>
+                    {% endif %}
+                    <span class="song-card-duration">{{ song.formatted_duration }}</span>
+                </div>
+                <div class="song-card-body">
+                    <a href="{% url 'song_detail' song.id %}" class="song-card-title">{{ song.title }}</a>
+                    
+                    <div class="song-card-artist">
+                        {% for artist in song.artists.all %}
+                            <a href="{% url 'artist_detail' artist.id %}" style="color: var(--text-secondary); text-decoration: none;">
+                                {{ artist.name }}
+                            </a>{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            <span style="color: #64748b;">Unknown Artist</span>
+                        {% endfor %}
+                    </div>
+
+                    {% if song.album_name %}
+                        <div class="song-card-album">
+                            💽 {{ song.album_name }}{% if song.release_year %} ({{ song.release_year }}){% endif %}
+                        </div>
+                    {% elif song.release_year %}
+                        <div class="song-card-album">
+                            📅 {{ song.release_year }}
+                        </div>
+                    {% endif %}
+
+                    <div class="song-card-genres">
+                        {% for genre in song.genres.all %}
+                            <a href="{% url 'genre_detail' genre.id %}" class="badge-genre" style="text-decoration: none;">
+                                {{ genre.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="song-card-playback">
+                        {% include 'catalog/_playback_track_control.html' with song=song %}
+                    </div>
+                    {% if song.id in favourited_song_ids %}
+                        {% include 'profiles/_favourite_button.html' with song=song is_favourited=True %}
+                    {% else %}
+                        {% include 'profiles/_favourite_button.html' with song=song is_favourited=False %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls (Preserves GET parameters) -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-container">
+            <div>
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{{ pagination_params }}" class="page-btn">&larr; Previous</a>
+                {% else %}
+                    <span class="page-btn disabled">&larr; Previous</span>
+                {% endif %}
+            </div>
+
+            <div class="pagination-links">
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p == page_obj.number %}
+                        <span class="page-btn active">{{ p }}</span>
+                    {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        <a href="?page={{ p }}{{ pagination_params }}" class="page-btn">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{{ pagination_params }}" class="page-btn">Next &rarr;</a>
+                {% else %}
+                    <span class="page-btn disabled">Next &rarr;</span>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+{% else %}
+    <div class="card" style="text-align: center; padding: 48px 24px;">
+        <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+        <h3>No songs found</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">
+            We could not find any songs matching your search or filter criteria.
+        </p>
+        <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">Reset Filters</a>
+    </div>
+{% endif %}
+{% endblock %}

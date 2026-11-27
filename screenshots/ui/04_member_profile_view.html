@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/dashboard/">Dashboard</a></li>
+
+                
+
+                <li><a href="/accounts/profile/">My Profile</a></li>
+                <li>
+                    <form method="POST" action="/accounts/logout/" style="display:inline;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="9WEX5GqZkX2aGKATdCYmpBhD6hlsgQ3Kwdi4V6D81CgmFd7JMXLrRngxKtZfrO8h">
+                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout (alex_rhythm)</button>
+                    </form>
+                </li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div class="card" style="max-width: 700px; margin: 20px auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h2>Alex Rivera</h2>
+            <p style="color: var(--text-secondary); font-size: 14px;">@alex_rhythm • Joined Nov 26, 2026</p>
+        </div>
+        <div>
+            
+                <span class="badge badge-member">MEMBER</span>
+            
+        </div>
+    </div>
+
+    <div style="margin: 24px 0; padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
+        <h4 style="margin-bottom: 8px; color: #ffffff;">About Me</h4>
+        <p style="color: var(--text-secondary); font-size: 14px;">
+            Indie rock and alternative music enthusiast.
+        </p>
+    </div>
+
+    <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+        <div class="metric-card">
+            <div class="metric-label">Playlists Created</div>
+            <div class="metric-value">2</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Favourite Songs</div>
+            <div class="metric-value">5</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+        <a href="/accounts/profile/edit/" class="btn btn-primary">Edit Profile</a>
+        <a href="/accounts/dashboard/" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

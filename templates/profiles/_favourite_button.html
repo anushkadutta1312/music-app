@@ -1,0 +1,11 @@
+<form class="favourite-form" method="post" action="{% url 'favourite_action' song.id %}" data-favourite-form {% if remove_card_on_unsave %}data-remove-card-on-unsave="true"{% endif %}>
+    {% csrf_token %}
+    {% if is_favourited %}
+        <input type="hidden" name="action" value="remove">
+        <button type="submit" class="btn btn-secondary btn-sm" data-favourite-button aria-pressed="true">♥ Remove from favourites</button>
+    {% else %}
+        <input type="hidden" name="action" value="add">
+        <button type="submit" class="btn btn-primary btn-sm" data-favourite-button aria-pressed="false">♡ Add to favourites</button>
+    {% endif %}
+    <span class="favourite-feedback" data-favourite-feedback role="status" aria-live="polite"></span>
+</form>

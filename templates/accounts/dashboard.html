@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Member Dashboard — Music App{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 24px;">
+    <h2>Welcome back, {{ profile.display_name|default:user.username }}!</h2>
+    <p style="color: var(--text-secondary);">
+        Explore music, curate your playlists, and discover new songs.
+    </p>
+</div>
+
+<!-- Quick Metrics -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">My Playlists</div>
+        <div class="metric-value">{{ total_playlists }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">My Favourites</div>
+        <div class="metric-value">{{ total_favourites }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Account Role</div>
+        <div style="margin-top: 10px;">
+            <span class="badge badge-member">MEMBER</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-columns">
+    <!-- My Recent Playlists -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+            <h3>My Playlists</h3>
+            <a href="{% url 'playlist_list' %}" class="btn btn-secondary btn-sm">Manage Playlists</a>
+        </div>
+        {% if playlists %}
+            <ul style="list-style: none; margin-top: 12px;">
+                {% for pl in playlists %}
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <a href="{% url 'playlist_detail' pl.id %}" style="color: #ffffff; font-weight: 600;">{{ pl.title }}</a><br>
+                            <small style="color: var(--text-secondary);">{{ pl.songs.count }} songs • {% if pl.is_public %}Public{% else %}Private{% endif %}</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: var(--text-secondary); margin-top: 12px; font-size: 14px;">You haven't created any playlists yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- My Recent Favourites -->
+    <div class="card">
+        <h3>Recent Favourites</h3>
+        {% if favourites %}
+            <ul style="list-style: none; margin-top: 12px;">
+                {% for fav in favourites %}
+                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: #ffffff;">{{ fav.song.title }}</strong><br>
+                            <small style="color: var(--text-secondary);">Duration: {{ fav.song.duration_seconds }}s</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: var(--text-secondary); margin-top: 12px; font-size: 14px;">No favourite songs saved yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Artists — Music App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <a href="{% url 'catalogue_manage' %}" style="color: var(--text-secondary); text-decoration: none; font-size: 13px;">Catalogue Hub</a>
+            <span style="color: var(--border-color);">&rsaquo;</span>
+            <span style="color: var(--text-primary); font-size: 13px; font-weight: 600;">Artists</span>
+        </div>
+        <h2>Manage Artists ({{ total_artists }})</h2>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'catalogue_manage' %}" class="btn btn-secondary">&larr; Back to Hub</a>
+        <a href="{% url 'artist_create' %}" class="btn btn-primary">+ Add New Artist</a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card" style="padding: 16px 20px; margin-bottom: 20px;">
+    <form method="GET" action="{% url 'artist_manage_list' %}" style="display: flex; gap: 10px;">
+        <input type="text" name="q" value="{{ q_query }}" placeholder="Filter artists by name..." class="form-control">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if q_query %}
+            <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Artists Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Artist Name</th>
+                    <th>Linked Songs</th>
+                    <th>Provider</th>
+                    <th>Created At</th>
+                    <th style="text-align: right; width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artist in artists %}
+                    <tr>
+                        <td style="color: var(--text-secondary); font-size: 12px;">{{ artist.id }}</td>
+                        <td>
+                            <a href="{% url 'artist_detail' artist.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                {{ artist.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                                {{ artist.song_count }} track{{ artist.song_count|pluralize }}
+                            </span>
+                        </td>
+                        <td>{{ artist.external_provider|default:"—" }}</td>
+                        <td style="font-size: 13px; color: var(--text-secondary);">{{ artist.created_at|date:"M d, Y" }}</td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <a href="{% url 'artist_update' artist.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'artist_delete' artist.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                            No artists found.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-container">
+            <div style="font-size: 13px; color: var(--text-secondary);">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </div>
+            <div class="pagination-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{{ pagination_params }}" class="page-btn">&larr;</a>
+                {% endif %}
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p == page_obj.number %}
+                        <span class="page-btn active">{{ p }}</span>
+                    {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        <a href="?page={{ p }}{{ pagination_params }}" class="page-btn">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{{ pagination_params }}" class="page-btn">&rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/login/">Login</a></li>
+                <li><a href="/accounts/register/" class="nav-btn nav-btn-primary">Register</a></li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div class="card card-auth">
+    <h2>Create an Account</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+        Join Music App to explore songs, create playlists, and save your favourite tracks.
+    </p>
+
+    <form method="POST" novalidate>
+        <input type="hidden" name="csrfmiddlewaretoken" value="2cn7bxnrvctbGVOOJl2gsKvkuE9jBdRJpt1e1XAAcRHnFolEiGPlUwue8QN6MbWg">
+
+        
+
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Choose a username" autofocus maxlength="150" required id="id_username">
+            
+        </div>
+
+        <div class="form-group">
+            <label for="id_email">Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="Enter your email address" maxlength="320" required id="id_email">
+            
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter a strong password" required id="id_password">
+            
+        </div>
+
+        <div class="form-group">
+            <label for="id_confirm_password">Confirm Password</label>
+            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm your password" required id="id_confirm_password">
+            
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">Register Account</button>
+    </form>
+
+    <p style="margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+        Already have an account? <a href="/accounts/login/" style="color: var(--accent-primary);">Sign In</a>
+    </p>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

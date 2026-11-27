@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Genre: {{ genre.name }} — Music App{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; Back to Catalogue</a>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+        <div>
+            <span class="badge-genre" style="font-size: 12px; padding: 4px 10px;">Genre Classification</span>
+            <h1 style="font-size: 28px; font-weight: 700; margin: 8px 0 4px;">{{ genre.name }}</h1>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+                {{ song_count }} song{{ song_count|pluralize }} tagged with this genre
+            </p>
+        </div>
+        {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+            <div style="display: flex; gap: 8px;">
+                <a href="{% url 'genre_update' genre.id %}" class="btn btn-secondary btn-sm">Edit Genre</a>
+                <a href="{% url 'genre_delete' genre.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if genre.description %}
+        <p style="color: var(--text-primary); font-size: 14px; line-height: 1.6; margin-top: 12px;">
+            {{ genre.description }}
+        </p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Songs in {{ genre.name }}</h3>
+    {% if songs %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist(s)</th>
+                        <th>Album</th>
+                        <th>Duration</th>
+                        <th>Year</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for song in songs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'song_detail' song.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                    {{ song.title }}
+                                </a>
+                            </td>
+                            <td>
+                                {% for a in song.artists.all %}
+                                    <a href="{% url 'artist_detail' a.id %}" style="color: var(--text-secondary); text-decoration: none;">{{ a.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    —
+                                {% endfor %}
+                            </td>
+                            <td>{{ song.album_name|default:"—" }}</td>
+                            <td>{{ song.formatted_duration }}</td>
+                            <td>{{ song.release_year|default:"—" }}</td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'song_detail' song.id %}" class="btn btn-secondary btn-sm">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: var(--text-secondary);">No songs registered under this genre yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

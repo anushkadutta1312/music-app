@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue Management — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/dashboard/">Dashboard</a></li>
+
+                
+                    <li><a href="/accounts/admin-dashboard/">Admin Dashboard</a></li>
+                    <li><a href="/catalog/manage/">Catalogue Management</a></li>
+                
+
+                <li><a href="/accounts/profile/">My Profile</a></li>
+                <li>
+                    <form method="POST" action="/accounts/logout/" style="display:inline;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HBKlZh52fhdo8bOQSTV8DrX2ImPbGMxELrl2MmipJJBC8Cp0ApR65S0LKrwKlJ0S">
+                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout (admin_demo)</button>
+                    </form>
+                </li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <h2>Music Catalogue Management</h2>
+        <p style="color: var(--text-secondary);">
+            Administrative tools to curate songs, artists, and musical genres. Restricted to <code>ADMIN</code> role.
+        </p>
+    </div>
+    <div>
+        <a href="/accounts/admin-dashboard/" class="btn btn-secondary">&larr; Back to Admin Dashboard</a>
+    </div>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Total Songs</div>
+        <div class="metric-value">55</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Total Artists</div>
+        <div class="metric-value">20</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Total Genres</div>
+        <div class="metric-value">10</div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Recent Catalogue Songs</h3>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Album</th>
+                    <th>Duration</th>
+                    <th>Release Year</th>
+                    <th>Provider ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td><strong>Holocene</strong></td>
+                        <td>Bon Iver</td>
+                        <td>336s</td>
+                        <td>2011</td>
+                        <td><code>DEMO_TRK_55</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Skinny Love</strong></td>
+                        <td>For Emma, Forever Ago</td>
+                        <td>239s</td>
+                        <td>2007</td>
+                        <td><code>DEMO_TRK_54</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Yellow</strong></td>
+                        <td>Parachutes</td>
+                        <td>269s</td>
+                        <td>2000</td>
+                        <td><code>DEMO_TRK_53</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Viva La Vida</strong></td>
+                        <td>Viva la Vida</td>
+                        <td>242s</td>
+                        <td>2008</td>
+                        <td><code>DEMO_TRK_52</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Uptown Funk</strong></td>
+                        <td>Uptown Special</td>
+                        <td>269s</td>
+                        <td>2014</td>
+                        <td><code>DEMO_TRK_51</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Dog Days Are Over</strong></td>
+                        <td>Lungs</td>
+                        <td>252s</td>
+                        <td>2009</td>
+                        <td><code>DEMO_TRK_50</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Don&#x27;t Start Now</strong></td>
+                        <td>Future Nostalgia</td>
+                        <td>183s</td>
+                        <td>2019</td>
+                        <td><code>DEMO_TRK_49</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Levitating</strong></td>
+                        <td>Future Nostalgia</td>
+                        <td>203s</td>
+                        <td>2020</td>
+                        <td><code>DEMO_TRK_48</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Without Me</strong></td>
+                        <td>The Eminem Show</td>
+                        <td>290s</td>
+                        <td>2002</td>
+                        <td><code>DEMO_TRK_47</code></td>
+                    </tr>
+                
+                    <tr>
+                        <td><strong>Lose Yourself</strong></td>
+                        <td>8 Mile Soundtrack</td>
+                        <td>326s</td>
+                        <td>2002</td>
+                        <td><code>DEMO_TRK_46</code></td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

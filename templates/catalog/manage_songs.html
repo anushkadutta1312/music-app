@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Songs — Music App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <a href="{% url 'catalogue_manage' %}" style="color: var(--text-secondary); text-decoration: none; font-size: 13px;">Catalogue Hub</a>
+            <span style="color: var(--border-color);">&rsaquo;</span>
+            <span style="color: var(--text-primary); font-size: 13px; font-weight: 600;">Songs</span>
+        </div>
+        <h2>Manage Songs ({{ total_songs }})</h2>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'catalogue_manage' %}" class="btn btn-secondary">&larr; Back to Hub</a>
+        <a href="{% url 'song_create' %}" class="btn btn-primary">+ Add New Song</a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card" style="padding: 16px 20px; margin-bottom: 20px;">
+    <form method="GET" action="{% url 'song_manage_list' %}" style="display: flex; gap: 10px;">
+        <input type="text" name="q" value="{{ q_query }}" placeholder="Filter songs by title, artist, or album..." class="form-control">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if q_query %}
+            <a href="{% url 'song_manage_list' %}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Song Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Title</th>
+                    <th>Artist(s)</th>
+                    <th>Album</th>
+                    <th>Duration</th>
+                    <th>Release</th>
+                    <th>Genres</th>
+                    <th style="text-align: right; width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for song in songs %}
+                    <tr>
+                        <td style="color: var(--text-secondary); font-size: 12px;">{{ song.id }}</td>
+                        <td>
+                            <a href="{% url 'song_detail' song.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                {{ song.title }}
+                            </a>
+                        </td>
+                        <td>
+                            {% for a in song.artists.all %}
+                                <a href="{% url 'artist_detail' a.id %}" style="color: var(--text-secondary); text-decoration: none;">{{ a.name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                <span style="color: #64748b;">—</span>
+                            {% endfor %}
+                        </td>
+                        <td>{{ song.album_name|default:"—" }}</td>
+                        <td>{{ song.formatted_duration }}</td>
+                        <td>{{ song.release_year|default:"—" }}</td>
+                        <td>
+                            {% for g in song.genres.all %}
+                                <span class="badge-genre">{{ g.name }}</span>
+                            {% empty %}
+                                <span style="color: #64748b; font-size: 11px;">—</span>
+                            {% endfor %}
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <a href="{% url 'song_update' song.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'song_delete' song.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 32px; color: var(--text-secondary);">
+                            No songs found matching your search.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-container">
+            <div style="font-size: 13px; color: var(--text-secondary);">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </div>
+            <div class="pagination-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{{ pagination_params }}" class="page-btn">&larr;</a>
+                {% endif %}
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p == page_obj.number %}
+                        <span class="page-btn active">{{ p }}</span>
+                    {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                        <a href="?page={{ p }}{{ pagination_params }}" class="page-btn">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{{ pagination_params }}" class="page-btn">&rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

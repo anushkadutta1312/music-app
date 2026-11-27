@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/dashboard/">Dashboard</a></li>
+
+                
+                    <li><a href="/accounts/admin-dashboard/">Admin Dashboard</a></li>
+                    <li><a href="/catalog/manage/">Catalogue Management</a></li>
+                
+
+                <li><a href="/accounts/profile/">My Profile</a></li>
+                <li>
+                    <form method="POST" action="/accounts/logout/" style="display:inline;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="CR4hgljqELQvFDtCdhRKGpbt9nFm4FAGGHFY3qwN8deJF44MVNNI8QecbsmVJC3U">
+                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout (admin_demo)</button>
+                    </form>
+                </li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <h2>System Administration Dashboard</h2>
+        <p style="color: var(--text-secondary);">
+            Platform monitoring and catalogue overview. Restricted strictly to users with the <code>ADMIN</code> role.
+        </p>
+    </div>
+    <div>
+        <span class="badge badge-admin">SERVER ROLE: ADMIN</span>
+    </div>
+</div>
+
+<!-- System Metrics -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Total Users</div>
+        <div class="metric-value">12</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Catalogue Songs</div>
+        <div class="metric-value">55</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Artists</div>
+        <div class="metric-value">20</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Genres</div>
+        <div class="metric-value">10</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">User Playlists</div>
+        <div class="metric-value">15</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <!-- Recent Users -->
+    <div class="card">
+        <h3>Registered Accounts</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                        <tr>
+                            <td><strong>kevin_newbie</strong></td>
+                            <td>kevin@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td><strong>julia_ambient</strong></td>
+                            <td>julia@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td><strong>ian_hiphop</strong></td>
+                            <td>ian@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td><strong>harper_pop</strong></td>
+                            <td>harper@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td><strong>grace_jazz</strong></td>
+                            <td>grace@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td><strong>felix_rock</strong></td>
+                            <td>felix@musicapp.local</td>
+                            <td>
+                                
+                                    <span class="badge badge-member">MEMBER</span>
+                                
+                            </td>
+                        </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Administrative Quick Actions -->
+    <div class="card">
+        <h3>Catalogue Administration</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+            Manage and curate artists, genres, and track catalogue.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="/catalog/manage/" class="btn btn-primary" style="text-align: center;">Open Catalogue Management</a>
+            <a href="/admin/" target="_blank" class="btn btn-secondary" style="text-align: center;">Open Django Admin Panel &rarr;</a>
+        </div>
+
+        <div style="margin-top: 20px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px; color: var(--text-secondary); border-left: 3px solid var(--accent-success);">
+            <strong>Server-Side Security Check:</strong> Standard members are denied access to this view and will receive a 403 Forbidden response.
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

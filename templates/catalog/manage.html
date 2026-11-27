@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Catalogue Management — Music App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <div>
+        <span class="badge badge-admin">Admin Portal</span>
+        <h2 style="margin-top: 6px;">Music Catalogue Management</h2>
+        <p style="color: var(--text-secondary);">
+            Administrative tools to curate songs, artists, and musical genres. Restricted to <code>ADMIN</code> role.
+        </p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; View Public Catalogue</a>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Admin Dashboard</a>
+    </div>
+</div>
+
+<!-- Metrics summary cards with quick-action links -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Total Songs</div>
+        <div class="metric-value">{{ total_songs }}</div>
+        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
+            <a href="{% url 'song_manage_list' %}" class="btn btn-secondary btn-sm">Manage Songs</a>
+            <a href="{% url 'song_create' %}" class="btn btn-primary btn-sm">+ Add Song</a>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Total Artists</div>
+        <div class="metric-value">{{ total_artists }}</div>
+        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
+            <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary btn-sm">Manage Artists</a>
+            <a href="{% url 'artist_create' %}" class="btn btn-primary btn-sm">+ Add Artist</a>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Total Genres</div>
+        <div class="metric-value">{{ total_genres }}</div>
+        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
+            <a href="{% url 'genre_manage_list' %}" class="btn btn-secondary btn-sm">Manage Genres</a>
+            <a href="{% url 'genre_create' %}" class="btn btn-primary btn-sm">+ Add Genre</a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Navigation Bar -->
+<div class="card" style="padding: 16px 24px;">
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <span style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-right: 8px;">Quick Jump:</span>
+        <a href="{% url 'song_manage_list' %}" class="btn btn-secondary btn-sm">🎵 All Songs ({{ total_songs }})</a>
+        <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary btn-sm">🎤 All Artists ({{ total_artists }})</a>
+        <a href="{% url 'genre_manage_list' %}" class="btn btn-secondary btn-sm">🏷️ All Genres ({{ total_genres }})</a>
+    </div>
+</div>
+
+<!-- Recent Songs Table -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3>Recently Added Songs</h3>
+        <a href="{% url 'song_manage_list' %}" style="font-size: 13px; color: var(--accent-primary); text-decoration: none;">View All &rarr;</a>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist(s)</th>
+                    <th>Album</th>
+                    <th>Duration</th>
+                    <th>Release</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for song in songs %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'song_detail' song.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
+                                {{ song.title }}
+                            </a>
+                        </td>
+                        <td>
+                            {% for a in song.artists.all %}
+                                {{ a.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                —
+                            {% endfor %}
+                        </td>
+                        <td>{{ song.album_name|default:"—" }}</td>
+                        <td>{{ song.formatted_duration }}</td>
+                        <td>{{ song.release_year|default:"—" }}</td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'song_update' song.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'song_delete' song.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

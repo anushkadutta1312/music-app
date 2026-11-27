@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied — Music App{% endblock %}
+
+{% block content %}
+<div class="card card-auth" style="text-align: center; max-width: 550px;">
+    <div style="font-size: 48px; margin-bottom: 12px;">🚫</div>
+    <h2 style="color: var(--accent-danger);">403 — Access Denied</h2>
+    <p style="color: var(--text-secondary); margin: 16px 0 24px; font-size: 15px;">
+        You do not possess the required administrator privileges to access this page. This area is strictly restricted to platform administrators (<code>ADMIN</code> role).
+    </p>
+
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Member Dashboard</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Return Home</a>
+    </div>
+</div>
+{% endblock %}

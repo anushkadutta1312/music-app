@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}My Playlists — Music App{% endblock %}
+
+{% block content %}
+<div class="playlist-page-header">
+    <div>
+        <h1>My Playlists</h1>
+        <p>Private music collections owned by your account.</p>
+    </div>
+    <a href="{% url 'playlist_create' %}" class="btn btn-primary">Create Playlist</a>
+</div>
+
+{% if playlists %}
+    <div class="playlist-grid">
+        {% for playlist in playlists %}
+            <article class="card playlist-card">
+                <h2><a href="{% url 'playlist_detail' playlist.id %}">{{ playlist.title }}</a></h2>
+                <p>{{ playlist.description|default:"No description yet."|truncatewords:24 }}</p>
+                <div class="playlist-card-meta">
+                    <span>{{ playlist.song_count }} song{{ playlist.song_count|pluralize }}</span>
+                    <span>Created {{ playlist.created_at|date:"M j, Y" }}</span>
+                </div>
+                <div class="playlist-card-actions">
+                    <a href="{% url 'playlist_detail' playlist.id %}" class="btn btn-primary btn-sm">Open</a>
+                    <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                    <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card playlist-empty-state">
+        <div class="playlist-empty-icon">♫</div>
+        <h2>You have no playlists yet</h2>
+        <p>Create a private playlist, then add songs from their catalogue detail pages.</p>
+        <a href="{% url 'playlist_create' %}" class="btn btn-primary">Create your first playlist</a>
+    </div>
+{% endif %}
+{% endblock %}

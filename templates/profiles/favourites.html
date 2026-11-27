@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}My Favourites — Music App{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>My Favourites</h1>
+        <p class="text-muted">Songs saved to your personal collection.</p>
+    </div>
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">Browse Music</a>
+</div>
+
+<p data-favourites-page-feedback role="status" aria-live="polite"></p>
+<div class="music-grid" data-favourites-grid data-player-queue aria-label="Favourite songs playback queue" {% if not favourites %}hidden{% endif %}>
+    {% for favourite in favourites %}
+        {% with song=favourite.song %}
+            <div class="song-card">
+                <div class="song-card-cover">
+                    {% if song.cover_image_url %}
+                        <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="song-card-placeholder" style="display: none;">🎵</span>
+                    {% else %}
+                        <span class="song-card-placeholder">🎵</span>
+                    {% endif %}
+                    <span class="song-card-duration">{{ song.formatted_duration }}</span>
+                </div>
+                <div class="song-card-body">
+                    <a href="{% url 'song_detail' song.id %}" class="song-card-title">{{ song.title }}</a>
+                    <div class="song-card-artist">
+                        {% for artist in song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}
+                    </div>
+                    <div class="song-card-album">
+                        {{ song.album_name|default:"Single / Standalone" }}{% if song.release_year %} ({{ song.release_year }}){% endif %}
+                    </div>
+                    <div class="song-card-genres">
+                        {% for genre in song.genres.all %}<span class="badge-genre">{{ genre.name }}</span>{% empty %}<span class="text-muted">No genres</span>{% endfor %}
+                    </div>
+                    <div class="song-card-playback">
+                        {% include 'catalog/_playback_track_control.html' with song=song %}
+                    </div>
+                    {% include 'profiles/_favourite_button.html' with song=song is_favourited=True remove_card_on_unsave=True %}
+                </div>
+            </div>
+        {% endwith %}
+    {% endfor %}
+</div>
+<div class="card" data-favourites-empty {% if favourites %}hidden{% endif %} style="text-align: center; padding: 48px 24px;">
+    <div style="font-size: 40px; margin-bottom: 12px;">♡</div>
+    <h2>Your favourites are empty</h2>
+    <p class="text-muted" style="margin: 12px 0 20px;">Save songs from the catalogue and they will appear here.</p>
+    <a href="{% url 'catalogue_browse' %}" class="btn btn-primary">Explore the catalogue</a>
+</div>
+{% endblock %}

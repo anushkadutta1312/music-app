@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — Music App{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 20px auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h2>{{ profile.display_name|default:user.username }}</h2>
+            <p style="color: var(--text-secondary); font-size: 14px;">@{{ user.username }} • Joined {{ user.date_joined|date:"M d, Y" }}</p>
+        </div>
+        <div>
+            {% if profile.role == 'ADMIN' %}
+                <span class="badge badge-admin">ADMINISTRATOR</span>
+            {% else %}
+                <span class="badge badge-member">MEMBER</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="margin: 24px 0; padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
+        <h4 style="margin-bottom: 8px; color: #ffffff;">About Me</h4>
+        <p style="color: var(--text-secondary); font-size: 14px;">
+            {{ profile.bio|default:"No bio provided yet." }}
+        </p>
+    </div>
+
+    <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+        <div class="metric-card">
+            <div class="metric-label">Playlists Created</div>
+            <div class="metric-value">{{ playlist_count }}</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Favourite Songs</div>
+            <div class="metric-value">{{ favourite_count }}</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+        <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

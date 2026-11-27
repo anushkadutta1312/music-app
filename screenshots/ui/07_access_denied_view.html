@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied — Music App</title>
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">
+                🎵 <span>Music App</span>
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+
+            
+                <li><a href="/accounts/dashboard/">Dashboard</a></li>
+
+                
+
+                <li><a href="/accounts/profile/">My Profile</a></li>
+                <li>
+                    <form method="POST" action="/accounts/logout/" style="display:inline;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="rOnJUFmL6Ww1D1coiLPGPlVEXERmZAUzbx7awcziwCv6b91SrAkSPf2QH20szJBz">
+                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout (alex_rhythm)</button>
+                    </form>
+                </li>
+            
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        
+
+        
+<div class="card card-auth" style="text-align: center; max-width: 550px;">
+    <div style="font-size: 48px; margin-bottom: 12px;">🚫</div>
+    <h2 style="color: var(--accent-danger);">403 — Access Denied</h2>
+    <p style="color: var(--text-secondary); margin: 16px 0 24px; font-size: 15px;">
+        You do not possess the required administrator privileges to access this page. This area is strictly restricted to platform administrators (<code>ADMIN</code> role).
+    </p>
+
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="/accounts/dashboard/" class="btn btn-primary">Go to Member Dashboard</a>
+        <a href="/" class="btn btn-secondary">Return Home</a>
+    </div>
+</div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
+    </footer>
+</body>
+</html>

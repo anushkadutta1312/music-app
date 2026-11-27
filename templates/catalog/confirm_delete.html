@@ -1,35 +1,42 @@
 {% extends 'base.html' %}
 
-{% block title %}Confirm Deletion: {{ item_name }} — Music App{% endblock %}
+{% block title %}Confirm Deletion: {{ item_name }} — Groovy{% endblock %}
 
 {% block content %}
-<div style="max-width: 520px; margin: 40px auto;">
-    <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 48px; margin-bottom: 8px;">⚠️</div>
-            <span class="badge badge-admin">Irreversible Deletion</span>
-            <h2 style="margin-top: 8px; color: #f87171;">Delete {{ item_type }}?</h2>
+<div class="max-w-md mx-auto my-16 bg-[#161922] border border-rose-500/20 rounded-3xl p-8 shadow-2xl">
+    <div class="text-center mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
+            <span class="iconify text-3xl" data-icon="lucide:alert-triangle"></span>
         </div>
+        <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-semibold uppercase tracking-wider">Irreversible Action</span>
+        <h2 class="text-2xl font-bold text-white mt-3">Delete {{ item_type }}?</h2>
+    </div>
 
-        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;">Target Record</div>
-            <div style="font-size: 18px; font-weight: 700; color: #ffffff;">{{ item_name }}</div>
-        </div>
+    <div class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-6">
+        <div class="text-xs uppercase tracking-wider text-white/40 mb-1 font-semibold">Target Record</div>
+        <div class="text-lg font-bold text-white">{{ item_name }}</div>
+    </div>
 
-        {% if impact_details %}
-            <div class="alert alert-warning" style="font-size: 13px; line-height: 1.5; margin-bottom: 24px;">
-                <strong>Relational Integrity Notice:</strong><br>
+    {% if impact_details %}
+        <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-xs text-amber-200/90 leading-relaxed mb-6 flex gap-3 items-start">
+            <span class="iconify text-lg text-amber-400 shrink-0 mt-0.5" data-icon="lucide:info"></span>
+            <div>
+                <strong class="block font-semibold text-amber-300 mb-1">Relational Integrity Notice:</strong>
                 {{ impact_details }}
             </div>
-        {% endif %}
+        </div>
+    {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
-            <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                <a href="{% url cancel_url %}" class="btn btn-secondary" style="flex: 1; text-align: center;">Cancel</a>
-                <button type="submit" class="btn btn-danger" style="flex: 1;">Confirm Delete</button>
-            </div>
-        </form>
-    </div>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="flex gap-3 justify-end">
+            <a href="{% url cancel_url %}" class="flex-1 text-center py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-all border border-white/10">
+                Cancel
+            </a>
+            <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm transition-all shadow-lg shadow-rose-600/30">
+                Confirm Delete
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}

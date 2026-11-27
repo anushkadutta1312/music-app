@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 
-{% block title %}Access Denied — Music App{% endblock %}
+{% block title %}Access Denied — Groovy{% endblock %}
 
 {% block content %}
-<div class="card card-auth" style="text-align: center; max-width: 550px;">
-    <div style="font-size: 48px; margin-bottom: 12px;">🚫</div>
-    <h2 style="color: var(--accent-danger);">403 — Access Denied</h2>
-    <p style="color: var(--text-secondary); margin: 16px 0 24px; font-size: 15px;">
-        You do not possess the required administrator privileges to access this page. This area is strictly restricted to platform administrators (<code>ADMIN</code> role).
+<div class="max-w-md mx-auto my-16 bg-[#161922] border border-white/5 rounded-3xl p-8 text-center shadow-2xl">
+    <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-rose-500/5">
+        <span class="iconify text-3xl" data-icon="lucide:shield-alert"></span>
+    </div>
+    <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-semibold uppercase tracking-wider">Access Restricted</span>
+    <h2 class="text-2xl font-bold text-white mt-4 mb-2">403 — Access Denied</h2>
+    <p class="text-white/50 text-sm leading-relaxed mb-8">
+        You do not possess the required administrator privileges to access this page. This area is strictly restricted to platform administrators.
     </p>
 
-    <div style="display: flex; gap: 12px; justify-content: center;">
-        <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Member Dashboard</a>
-        <a href="{% url 'home' %}" class="btn btn-secondary">Return Home</a>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="{% url 'dashboard' %}" class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/25">
+            Member Dashboard
+        </a>
+        <a href="{% url 'home' %}" class="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-all border border-white/10">
+            Return Home
+        </a>
     </div>
 </div>
 {% endblock %}

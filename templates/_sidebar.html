@@ -1,0 +1,184 @@
+{% load static %}
+<aside class="w-64 flex flex-col border-r border-white/5 bg-[#0f0f12] h-full shrink-0 select-none">
+  <!-- Brand Logo -->
+  <div class="p-8 flex items-center gap-3">
+    <a href="{% url 'home' %}" class="flex items-center gap-3 text-white text-decoration-none group">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+        <iconify-icon icon="lucide:audio-lines" class="text-white text-xl"></iconify-icon>
+      </div>
+      <span class="text-xl font-bold tracking-tight text-white">Groovy</span>
+    </a>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="flex-1 overflow-y-auto custom-scrollbar px-6 space-y-6" style="scrollbar-width: thin; scrollbar-color: #333 transparent;">
+    <!-- Menu -->
+    <div>
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Menu</p>
+      <ul class="space-y-1">
+        <li>
+          <a href="{% url 'home' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'home' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            <iconify-icon icon="lucide:compass" class="text-lg"></iconify-icon>
+            <span>Explore</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'catalogue_browse' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'catalogue_browse' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+            <iconify-icon icon="lucide:music-2" class="text-lg"></iconify-icon>
+            <span>Catalogue</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'home' %}#top-artists" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
+            <iconify-icon icon="lucide:mic-2" class="text-lg"></iconify-icon>
+            <span>Artists</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'catalogue_browse' %}?filter=samples" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
+            <iconify-icon icon="lucide:disc" class="text-lg"></iconify-icon>
+            <span>Audio Samples</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Library -->
+    <div>
+      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Library</p>
+      <ul class="space-y-1">
+        {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'dashboard' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'dashboard' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+              <iconify-icon icon="lucide:layout-dashboard" class="text-lg"></iconify-icon>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'my_favourites' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'my_favourites' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+              <iconify-icon icon="lucide:heart" class="text-lg text-rose-400"></iconify-icon>
+              <span>Favorites</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'playlist_list' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'playlist_list' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+              <iconify-icon icon="lucide:library" class="text-lg"></iconify-icon>
+              <span>Playlists</span>
+            </a>
+          </li>
+          {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+            <li>
+              <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'admin_dashboard' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+                <iconify-icon icon="lucide:shield-check" class="text-lg text-amber-400"></iconify-icon>
+                <span>Admin Hub</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'song_create' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'song_create' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+                <iconify-icon icon="lucide:upload-cloud" class="text-lg text-indigo-400"></iconify-icon>
+                <span>Upload Song</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'catalogue_manage' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'catalogue_manage' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
+                <iconify-icon icon="lucide:sliders-horizontal" class="text-lg"></iconify-icon>
+                <span>Manage Music</span>
+              </a>
+            </li>
+          {% endif %}
+        {% else %}
+          <li>
+            <a href="{% url 'login' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
+              <iconify-icon icon="lucide:log-in" class="text-lg"></iconify-icon>
+              <span>Sign In</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'register' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
+              <iconify-icon icon="lucide:user-plus" class="text-lg"></iconify-icon>
+              <span>Create Account</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Playlists Section -->
+    <div>
+      <div class="flex items-center justify-between px-2 mb-3">
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Playlists</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'playlist_create' %}" class="text-indigo-400 hover:text-white transition-colors" title="Create Playlist">
+            <iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon>
+          </a>
+        {% endif %}
+      </div>
+      <ul class="space-y-1">
+        {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'playlist_create' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:plus-square" class="text-base text-indigo-500"></iconify-icon>
+              <span>Create New</span>
+            </a>
+          </li>
+        {% endif %}
+        <li>
+          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            <iconify-icon icon="lucide:play-circle" class="text-base text-emerald-400"></iconify-icon>
+            <span>Curator's Showcase</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            <iconify-icon icon="lucide:play-circle" class="text-base text-orange-400"></iconify-icon>
+            <span>Midnight Jazz Club</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            <iconify-icon icon="lucide:play-circle" class="text-base text-purple-400"></iconify-icon>
+            <span>Golden Age Hip-Hop</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- User Profile Rail Footer -->
+  <div class="p-5 mt-auto border-t border-white/5 bg-[#0a0a0c]/60">
+    {% if user.is_authenticated %}
+      <div class="bg-white/5 rounded-2xl p-3 flex items-center gap-3 border border-white/5">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
+          {{ user.username|make_list|first|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-white truncate">{{ user.username }}</p>
+          <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider">
+            {{ user.profile.role|default:"MEMBER" }}
+          </span>
+        </div>
+        <div class="flex items-center gap-1">
+          <a href="{% url 'profile' %}" class="p-1.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/10" title="Profile Settings">
+            <iconify-icon icon="lucide:settings" class="text-base"></iconify-icon>
+          </a>
+          <form method="POST" action="{% url 'logout' %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-400 transition-colors rounded-lg hover:bg-white/10" title="Logout">
+              <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
+            </button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="space-y-2">
+        <a href="{% url 'login' %}" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20">
+          <iconify-icon icon="lucide:log-in"></iconify-icon>
+          <span>Sign In</span>
+        </a>
+        <a href="{% url 'register' %}" class="w-full bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 border border-white/5 transition-colors">
+          <span>Create Account</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</aside>

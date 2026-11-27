@@ -1,54 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}My Favourites — Music App{% endblock %}
+{% block title %}My Favourites — Groovy{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<div class="px-8 md:px-12 py-8 max-w-[1600px] mx-auto">
+  
+  <div class="flex items-center justify-between mb-8">
     <div>
-        <h1>My Favourites</h1>
-        <p class="text-muted">Songs saved to your personal collection.</p>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:heart" class="text-rose-500 text-3xl"></iconify-icon>
+        <span>My Favourites</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">Songs bookmarked and saved to your personal library</p>
     </div>
-    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">Browse Music</a>
-</div>
+    
+    <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+      <iconify-icon icon="lucide:compass"></iconify-icon>
+      <span>Browse More Songs</span>
+    </a>
+  </div>
 
-<p data-favourites-page-feedback role="status" aria-live="polite"></p>
-<div class="music-grid" data-favourites-grid data-player-queue aria-label="Favourite songs playback queue" {% if not favourites %}hidden{% endif %}>
+  <p class="text-xs text-indigo-400 font-semibold mb-3" data-favourites-page-feedback role="status" aria-live="polite"></p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" data-favourites-grid data-player-queue aria-label="Favourite songs playback queue" {% if not favourites %}hidden{% endif %}>
     {% for favourite in favourites %}
-        {% with song=favourite.song %}
-            <div class="song-card">
-                <div class="song-card-cover">
-                    {% if song.cover_image_url %}
-                        <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <span class="song-card-placeholder" style="display: none;">🎵</span>
-                    {% else %}
-                        <span class="song-card-placeholder">🎵</span>
-                    {% endif %}
-                    <span class="song-card-duration">{{ song.formatted_duration }}</span>
-                </div>
-                <div class="song-card-body">
-                    <a href="{% url 'song_detail' song.id %}" class="song-card-title">{{ song.title }}</a>
-                    <div class="song-card-artist">
-                        {% for artist in song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}
-                    </div>
-                    <div class="song-card-album">
-                        {{ song.album_name|default:"Single / Standalone" }}{% if song.release_year %} ({{ song.release_year }}){% endif %}
-                    </div>
-                    <div class="song-card-genres">
-                        {% for genre in song.genres.all %}<span class="badge-genre">{{ genre.name }}</span>{% empty %}<span class="text-muted">No genres</span>{% endfor %}
-                    </div>
-                    <div class="song-card-playback">
-                        {% include 'catalog/_playback_track_control.html' with song=song %}
-                    </div>
-                    {% include 'profiles/_favourite_button.html' with song=song is_favourited=True remove_card_on_unsave=True %}
-                </div>
+      {% with song=favourite.song %}
+        <div class="bg-[#141417] border border-white/5 hover:border-indigo-500/30 rounded-3xl p-5 flex flex-col justify-between group transition-all hover:bg-white/[0.03] shadow-xl">
+          <div>
+            <div class="w-full aspect-square rounded-2xl overflow-hidden bg-white/5 mb-4 relative flex items-center justify-center shadow-lg border border-white/5">
+              {% if song.cover_image_url %}
+                <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover transition-transform group-hover:scale-105" onerror="this.style.display='none';">
+              {% endif %}
+              <iconify-icon icon="lucide:disc" class="text-5xl text-indigo-400/80"></iconify-icon>
+              
+              <span class="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md text-[10px] font-bold text-white px-2 py-0.5 rounded-md font-mono">
+                {{ song.formatted_duration }}
+              </span>
             </div>
-        {% endwith %}
+            
+            <a href="{% url 'song_detail' song.id %}" class="text-base font-black text-white group-hover:text-indigo-400 transition-colors truncate block text-decoration-none">
+              {{ song.title }}
+            </a>
+            
+            <p class="text-xs text-slate-400 mt-0.5 truncate">
+              {% for artist in song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}
+            </p>
+          </div>
+
+          <div class="pt-4 mt-3 border-t border-white/5 flex items-center justify-between gap-2">
+            {% with audio_url=song.audio_url %}
+              {% if audio_url %}
+                <button type="button"
+                        data-player-track
+                        data-audio-url="{{ audio_url }}"
+                        data-track-title="{{ song.title }}"
+                        data-track-artist="{{ song.artists.all|join:', ' }}"
+                        data-track-album="{{ song.album_name }}"
+                        data-track-cover="{{ song.cover_image_url }}"
+                        class="bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors">
+                  <iconify-icon icon="lucide:play"></iconify-icon>
+                  <span>Play</span>
+                </button>
+              {% else %}
+                <span class="text-[10px] text-slate-500 font-semibold">Catalogue</span>
+              {% endif %}
+            {% endwith %}
+
+            {% include 'profiles/_favourite_button.html' with song=song is_favourited=True remove_card_on_unsave=True %}
+          </div>
+        </div>
+      {% endwith %}
     {% endfor %}
-</div>
-<div class="card" data-favourites-empty {% if favourites %}hidden{% endif %} style="text-align: center; padding: 48px 24px;">
-    <div style="font-size: 40px; margin-bottom: 12px;">♡</div>
-    <h2>Your favourites are empty</h2>
-    <p class="text-muted" style="margin: 12px 0 20px;">Save songs from the catalogue and they will appear here.</p>
-    <a href="{% url 'catalogue_browse' %}" class="btn btn-primary">Explore the catalogue</a>
+  </div>
+
+  <div class="bg-[#141417] border border-white/5 rounded-3xl p-16 text-center max-w-lg mx-auto shadow-2xl" data-favourites-empty {% if favourites %}hidden{% endif %}>
+    <iconify-icon icon="lucide:heart" class="text-6xl text-slate-600 mb-4"></iconify-icon>
+    <h3 class="text-xl font-bold text-white mb-2">Your favourites are empty</h3>
+    <p class="text-xs text-slate-400 mb-6">Explore songs in the library and bookmark your favorites with the heart icon.</p>
+    <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-8 py-3.5 rounded-full inline-flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all">
+      <iconify-icon icon="lucide:compass"></iconify-icon>
+      <span>Explore the catalogue</span>
+    </a>
+  </div>
+
 </div>
 {% endblock %}

@@ -1,114 +1,151 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ action_title }} — Music App{% endblock %}
+{% block title %}{{ action_title }} — Groovy{% endblock %}
 
 {% block content %}
-<div style="max-width: 680px; margin: 0 auto;">
-    <div style="margin-bottom: 20px;">
-        <a href="{% url 'song_manage_list' %}" class="btn btn-secondary">&larr; Back to Songs</a>
+<div class="px-8 md:px-12 py-8 max-w-3xl mx-auto">
+  
+  <div class="mb-6 flex items-center justify-between">
+    <a href="{% url 'song_manage_list' %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+      <span>Back to Songs</span>
+    </a>
+    
+    <span class="text-[10px] font-extrabold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
+      Admin Portal
+    </span>
+  </div>
+
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
+    <div>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:upload-cloud" class="text-indigo-400 text-3xl"></iconify-icon>
+        <span>{{ action_title }}</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">
+        {% if is_edit %}
+          Update song metadata, MP3 audio file, and artist/genre associations.
+        {% else %}
+          Upload a new song and MP3 audio file to the music catalogue.
+        {% endif %}
+      </p>
     </div>
 
-    <div class="card">
-        <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
-            <span class="badge badge-admin">Admin Action</span>
-            <h2 style="margin-top: 6px;">{{ action_title }}</h2>
-            <p style="color: var(--text-secondary); font-size: 14px;">
-                {% if is_edit %}
-                    Update track metadata and Many-to-Many artist and genre associations.
-                {% else %}
-                    Add a new track to the music catalogue with its artists and genres.
-                {% endif %}
-            </p>
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <!-- Audio File Upload (Prominent Drag/Drop Box) -->
+      <div class="p-6 rounded-2xl bg-[#0a0a0c] border border-dashed border-indigo-500/40 hover:border-indigo-500 transition-colors space-y-3 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto text-indigo-400">
+          <iconify-icon icon="lucide:music" class="text-2xl"></iconify-icon>
+        </div>
+        <div>
+          <label for="id_audio_file" class="block text-xs font-bold text-white uppercase tracking-wider cursor-pointer">
+            Select or Upload MP3 Audio File
+          </label>
+          <p class="text-[11px] text-slate-400 mt-0.5">Upload local audio files (.mp3 format) for immediate in-app streaming</p>
+        </div>
+        <div class="flex justify-center [&>input]:text-xs [&>input]:text-slate-400 [&>input]:file:bg-indigo-600 [&>input]:file:text-white [&>input]:file:border-0 [&>input]:file:rounded-xl [&>input]:file:px-4 [&>input]:file:py-2 [&>input]:file:text-xs [&>input]:file:font-bold [&>input]:file:mr-4 [&>input]:file:cursor-pointer [&>input]:file:hover:bg-indigo-500">
+          {{ form.audio_file }}
+        </div>
+        {% if form.audio_file.errors %}
+          <p class="text-[11px] text-rose-400 font-medium">{{ form.audio_file.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Title -->
+      <div class="space-y-1.5">
+        <label for="id_title" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Song Title *</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+          {{ form.title }}
+        </div>
+        {% if form.title.errors %}<p class="text-[11px] text-rose-400">{{ form.title.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Album & Duration -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label for="id_album_name" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Album Name</label>
+          <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+            {{ form.album_name }}
+          </div>
+          {% if form.album_name.errors %}<p class="text-[11px] text-rose-400">{{ form.album_name.errors.0 }}</p>{% endif %}
         </div>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+        <div class="space-y-1.5">
+          <label for="id_duration_seconds" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Duration (Seconds) *</label>
+          <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+            {{ form.duration_seconds }}
+          </div>
+          {% if form.duration_seconds.errors %}<p class="text-[11px] text-rose-400">{{ form.duration_seconds.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
+      <!-- Release Year & Cover Image -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label for="id_release_year" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Release Year</label>
+          <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+            {{ form.release_year }}
+          </div>
+          {% if form.release_year.errors %}<p class="text-[11px] text-rose-400">{{ form.release_year.errors.0 }}</p>{% endif %}
+        </div>
 
-            <div class="form-group">
-                <label for="id_title">Song Title *</label>
-                {{ form.title }}
-                {% if form.title.errors %}<div class="error-text">{{ form.title.errors.0 }}</div>{% endif %}
+        <div class="space-y-1.5">
+          <label for="id_cover_image_url" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Cover Image URL</label>
+          <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+            {{ form.cover_image_url }}
+          </div>
+          {% if form.cover_image_url.errors %}<p class="text-[11px] text-rose-400">{{ form.cover_image_url.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <!-- Relational Associations (Artists & Genres) -->
+      <div class="p-6 rounded-2xl bg-[#0a0a0c] border border-white/5 space-y-4">
+        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <iconify-icon icon="lucide:link-2" class="text-indigo-400"></iconify-icon>
+          <span>Artists &amp; Genres Associations</span>
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label for="id_artists" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Artists *</label>
+            <div class="[&>select]:w-full [&>select]:bg-[#141417] [&>select]:border [&>select]:border-white/10 [&>select]:rounded-xl [&>select]:p-3 [&>select]:text-xs [&>select]:text-white [&>select]:focus:outline-none [&>select]:focus:border-indigo-500">
+              {{ form.artists }}
             </div>
+            <p class="text-[10px] text-slate-500">Hold Ctrl / Cmd to select multiple artists</p>
+            {% if form.artists.errors %}<p class="text-[11px] text-rose-400">{{ form.artists.errors.0 }}</p>{% endif %}
+          </div>
 
-            <div class="form-grid-two">
-                <div class="form-group">
-                    <label for="id_album_name">Album Name</label>
-                    {{ form.album_name }}
-                    {% if form.album_name.errors %}<div class="error-text">{{ form.album_name.errors.0 }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label for="id_duration_seconds">Duration (Seconds) *</label>
-                    {{ form.duration_seconds }}
-                    {% if form.duration_seconds.errors %}<div class="error-text">{{ form.duration_seconds.errors.0 }}</div>{% endif %}
-                    <div class="form-text">Must be strictly greater than 0.</div>
-                </div>
+          <div class="space-y-1.5">
+            <label for="id_genres" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Genres *</label>
+            <div class="[&>select]:w-full [&>select]:bg-[#141417] [&>select]:border [&>select]:border-white/10 [&>select]:rounded-xl [&>select]:p-3 [&>select]:text-xs [&>select]:text-white [&>select]:focus:outline-none [&>select]:focus:border-indigo-500">
+              {{ form.genres }}
             </div>
+            <p class="text-[10px] text-slate-500">Hold Ctrl / Cmd to select multiple genres</p>
+            {% if form.genres.errors %}<p class="text-[11px] text-rose-400">{{ form.genres.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+      </div>
 
-            <div class="form-grid-two">
-                <div class="form-group">
-                    <label for="id_release_year">Release Year</label>
-                    {{ form.release_year }}
-                    {% if form.release_year.errors %}<div class="error-text">{{ form.release_year.errors.0 }}</div>{% endif %}
-                    <div class="form-text">&ge; 1900 if provided.</div>
-                </div>
-                <div class="form-group">
-                    <label for="id_external_provider">External Provider</label>
-                    {{ form.external_provider }}
-                    {% if form.external_provider.errors %}<div class="error-text">{{ form.external_provider.errors.0 }}</div>{% endif %}
-                </div>
-            </div>
+      <div class="pt-4 flex items-center justify-end gap-3 border-t border-white/5">
+        <a href="{% url 'song_manage_list' %}" class="bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs py-3 px-6 rounded-xl transition-colors">
+          Cancel
+        </a>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 px-8 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+          <iconify-icon icon="lucide:check"></iconify-icon>
+          <span>{% if is_edit %}Save Changes{% else %}Upload &amp; Save Song{% endif %}</span>
+        </button>
+      </div>
 
-            <div class="form-group">
-                <label for="id_cover_image_url">Cover Image URL</label>
-                {{ form.cover_image_url }}
-                {% if form.cover_image_url.errors %}<div class="error-text">{{ form.cover_image_url.errors.0 }}</div>{% endif %}
-            </div>
+    </form>
+  </div>
 
-            <div class="form-group">
-                <label for="id_external_track_id">External Track Identifier</label>
-                {{ form.external_track_id }}
-                {% if form.external_track_id.errors %}<div class="error-text">{{ form.external_track_id.errors.0 }}</div>{% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="id_audio_file">Local MP3 Sample (Optional)</label>
-                {{ form.audio_file }}
-                {% if form.audio_file.errors %}<div class="error-text">{{ form.audio_file.errors.0 }}</div>{% endif %}
-                <div class="form-text">Upload only audio you have permission to use. Accepted format: MP3.</div>
-            </div>
-
-            <!-- Many-to-Many Associations -->
-            <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-top: 18px;">
-                <h3 style="font-size: 16px; margin-bottom: 12px;">Relational Associations (Junction Tables)</h3>
-
-                <div class="form-group">
-                    <label for="id_artists">Artists *</label>
-                    {{ form.artists }}
-                    {% if form.artists.errors %}<div class="error-text">{{ form.artists.errors.0 }}</div>{% endif %}
-                    <div class="form-text">Hold Ctrl / Cmd to select multiple artists. Creates rows in <code>SongArtist</code>.</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="id_genres">Genres *</label>
-                    {{ form.genres }}
-                    {% if form.genres.errors %}<div class="error-text">{{ form.genres.errors.0 }}</div>{% endif %}
-                    <div class="form-text">Hold Ctrl / Cmd to select multiple genres. Creates rows in <code>SongGenre</code>.</div>
-                </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-                <a href="{% url 'song_manage_list' %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">
-                    {% if is_edit %}Save Changes{% else %}Create Song{% endif %}
-                </button>
-            </div>
-        </form>
-    </div>
 </div>
 {% endblock %}

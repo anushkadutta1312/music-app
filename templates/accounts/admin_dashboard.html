@@ -1,90 +1,80 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Dashboard — Music App{% endblock %}
+{% block title %}Admin Dashboard — Groovy{% endblock %}
 
 {% block content %}
-<div class="admin-page-header">
+<div class="px-8 md:px-12 py-8 max-w-[1600px] mx-auto space-y-8">
+  
+  <div class="flex items-center justify-between">
     <div>
-        <h2>System Administration Dashboard</h2>
-        <p style="color: var(--text-secondary);">
-            Platform monitoring and catalogue overview. Restricted strictly to users with the <code>ADMIN</code> role.
-        </p>
-    </div>
-    <div class="admin-page-badge">
-        <span class="badge badge-admin">SERVER ROLE: ADMIN</span>
-    </div>
-</div>
-
-<!-- System Metrics -->
-<div class="metrics-grid">
-    <div class="metric-card">
-        <div class="metric-label">Total Users</div>
-        <div class="metric-value">{{ total_users }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Catalogue Songs</div>
-        <div class="metric-value">{{ total_songs }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Artists</div>
-        <div class="metric-value">{{ total_artists }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Genres</div>
-        <div class="metric-value">{{ total_genres }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">User Playlists</div>
-        <div class="metric-value">{{ total_playlists }}</div>
-    </div>
-</div>
-
-<div class="admin-dashboard-columns">
-    <!-- Recent Users -->
-    <div class="card">
-        <h3>Registered Accounts</h3>
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for u in recent_users %}
-                        <tr>
-                            <td><strong>{{ u.username }}</strong></td>
-                            <td>{{ u.email }}</td>
-                            <td>
-                                {% if u.profile.role == 'ADMIN' %}
-                                    <span class="badge badge-admin">ADMIN</span>
-                                {% else %}
-                                    <span class="badge badge-member">MEMBER</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span>
+        <span class="text-[10px] font-extrabold uppercase tracking-widest text-purple-400">Restricted Administration</span>
+      </div>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:shield-check" class="text-purple-400 text-3xl"></iconify-icon>
+        <span>System Administration Dashboard</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">Platform monitoring and catalogue metric counters</p>
     </div>
 
-    <!-- Administrative Quick Actions -->
-    <div class="card">
-        <h3>Catalogue Administration</h3>
-        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
-            Manage and curate artists, genres, and track catalogue.
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="{% url 'catalogue_manage' %}" class="btn btn-primary" style="text-align: center;">Open Catalogue Management</a>
-            <a href="/admin/" target="_blank" class="btn btn-secondary" style="text-align: center;">Open Django Admin Panel &rarr;</a>
-        </div>
+    <a href="{% url 'catalogue_manage' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+      <iconify-icon icon="lucide:sliders-horizontal"></iconify-icon>
+      <span>Catalogue Hub</span>
+    </a>
+  </div>
 
-        <div style="margin-top: 20px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; font-size: 12px; color: var(--text-secondary); border-left: 3px solid var(--accent-success);">
-            <strong>Server-Side Security Check:</strong> Standard members are denied access to this view and will receive a 403 Forbidden response.
-        </div>
+  <!-- Metric Counters -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Total Users</p>
+      <p class="text-3xl font-black text-white font-mono">{{ total_users }}</p>
     </div>
+
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Catalogue Songs</p>
+      <p class="text-3xl font-black text-indigo-400 font-mono">{{ total_songs }}</p>
+    </div>
+
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Artists</p>
+      <p class="text-3xl font-black text-purple-400 font-mono">{{ total_artists }}</p>
+    </div>
+
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Genres</p>
+      <p class="text-3xl font-black text-emerald-400 font-mono">{{ total_genres }}</p>
+    </div>
+
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Playlists</p>
+      <p class="text-3xl font-black text-amber-400 font-mono">{{ total_playlists }}</p>
+    </div>
+  </div>
+
+  <!-- Admin Quick Actions -->
+  <div class="bg-[#141417] border border-white/5 rounded-3xl p-8 shadow-xl space-y-6">
+    <h2 class="text-lg font-black text-white">Management Shortcuts</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <a href="{% url 'song_create' %}" class="p-5 rounded-2xl bg-[#0a0a0c] border border-white/5 hover:border-indigo-500/30 transition-all group text-decoration-none">
+        <iconify-icon icon="lucide:disc" class="text-2xl text-indigo-400 mb-2 block"></iconify-icon>
+        <strong class="text-sm text-white group-hover:text-indigo-400 block transition-colors">+ Add New Song</strong>
+        <p class="text-xs text-slate-500 mt-1">Upload audio, metadata and cover art</p>
+      </a>
+
+      <a href="{% url 'artist_create' %}" class="p-5 rounded-2xl bg-[#0a0a0c] border border-white/5 hover:border-purple-500/30 transition-all group text-decoration-none">
+        <iconify-icon icon="lucide:mic-2" class="text-2xl text-purple-400 mb-2 block"></iconify-icon>
+        <strong class="text-sm text-white group-hover:text-purple-400 block transition-colors">+ Add New Artist</strong>
+        <p class="text-xs text-slate-500 mt-1">Register performers, bio and country</p>
+      </a>
+
+      <a href="{% url 'genre_create' %}" class="p-5 rounded-2xl bg-[#0a0a0c] border border-white/5 hover:border-emerald-500/30 transition-all group text-decoration-none">
+        <iconify-icon icon="lucide:sparkles" class="text-2xl text-emerald-400 mb-2 block"></iconify-icon>
+        <strong class="text-sm text-white group-hover:text-emerald-400 block transition-colors">+ Add New Genre</strong>
+        <p class="text-xs text-slate-500 mt-1">Define musical classifications</p>
+      </a>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

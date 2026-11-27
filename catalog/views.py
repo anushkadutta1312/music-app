@@ -91,9 +91,11 @@ def catalogue_browse_view(request):
         'pagination_params': pagination_params,
         'genres': Genre.objects.all().order_by('name'),
         'artists': Artist.objects.all().order_by('name'),
+        'spotlight_artist': Artist.objects.annotate(song_count=Count('songs')).order_by('-song_count').first(),
+        'curated_playlists': Playlist.objects.filter(is_public=True).annotate(song_count=Count('songs'))[:3],
         'favourited_song_ids': set(Favourite.objects.filter(
             user=request.user, song__in=page_obj.object_list
-        ).values_list('song_id', flat=True)),
+        ).values_list('song_id', flat=True)) if request.user.is_authenticated else set(),
     }
     return render(request, 'catalog/browse.html', context)
 
@@ -120,14 +122,21 @@ def song_detail_view(request, pk):
 @login_required
 def artist_detail_view(request, pk):
     """
-    Detailed view of an artist, including biography and catalogue tracks.
+    Detailed view of an artist, including biography, catalogue tracks, and related artists.
     """
     artist = get_object_or_404(Artist, pk=pk)
     songs = artist.songs.prefetch_related('artists', 'genres').distinct().order_by('-created_at')
+    related_artists = Artist.objects.exclude(pk=artist.pk).annotate(song_count=Count('songs')).order_by('?')[:5]
+    favourited_song_ids = set(Favourite.objects.filter(
+        user=request.user, song__in=songs
+    ).values_list('song_id', flat=True)) if request.user.is_authenticated else set()
+
     context = {
         'artist': artist,
         'songs': songs,
         'song_count': songs.count(),
+        'related_artists': related_artists,
+        'favourited_song_ids': favourited_song_ids,
     }
     return render(request, 'catalog/artist_detail.html', context)
 
@@ -480,3 +489,53 @@ def genre_delete_view(request, pk):
         ),
     }
     return render(request, 'catalog/confirm_delete.html', context)
+
+
+# ==============================================================================
+# SPOTIFY-STYLE HOME DISCOVERY VIEW
+# ==============================================================================
+
+def home_view(request):
+    """
+    Spotify-style Home Discovery View.
+    Displays:
+    - Dynamic greeting based on time of day
+    - Playable sample tracks with instant site audio player integration
+    - Featured / Trending songs from the catalogue
+    - Featured public playlists
+    - Popular artists with circular avatars
+    - Browse by Genre categories with vibrant styling
+    - Favourited song state for authenticated users
+    """
+    from datetime import datetime
+    now_hour = datetime.now().hour
+    if 5 <= now_hour < 12:
+        greeting = "Good morning"
+    elif 12 <= now_hour < 18:
+        greeting = "Good afternoon"
+    else:
+        greeting = "Good evening"
+
+    sample_tracks = Song.objects.filter(audio_file__isnull=False).exclude(audio_file="").prefetch_related('artists', 'genres')
+    featured_songs = Song.objects.prefetch_related('artists', 'genres').order_by('-created_at')[:15]
+    hero_song = sample_tracks.first() or featured_songs.first()
+    featured_playlists = Playlist.objects.filter(is_public=True).annotate(song_count=Count('songs')).order_by('-created_at')[:8]
+    popular_artists = Artist.objects.annotate(song_count=Count('songs')).order_by('-song_count')[:12]
+    genres = Genre.objects.annotate(song_count=Count('songs')).order_by('name')
+
+    favourited_song_ids = set()
+    if request.user.is_authenticated:
+        favourited_song_ids = set(Favourite.objects.filter(user=request.user).values_list('song_id', flat=True))
+
+    context = {
+        'greeting': greeting,
+        'hero_song': hero_song,
+        'sample_tracks': sample_tracks,
+        'featured_songs': featured_songs,
+        'featured_playlists': featured_playlists,
+        'popular_artists': popular_artists,
+        'genres': genres,
+        'favourited_song_ids': favourited_song_ids,
+    }
+    return render(request, 'index.html', context)
+

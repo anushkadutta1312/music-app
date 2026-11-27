@@ -1,11 +1,15 @@
-<form class="favourite-form" method="post" action="{% url 'favourite_action' song.id %}" data-favourite-form {% if remove_card_on_unsave %}data-remove-card-on-unsave="true"{% endif %}>
+<form class="inline-flex items-center" method="post" action="{% url 'favourite_action' song.id %}" data-favourite-form {% if remove_card_on_unsave %}data-remove-card-on-unsave="true"{% endif %}>
     {% csrf_token %}
     {% if is_favourited %}
         <input type="hidden" name="action" value="remove">
-        <button type="submit" class="btn btn-secondary btn-sm" data-favourite-button aria-pressed="true">♥ Remove from favourites</button>
+        <button type="submit" class="p-2 rounded-xl text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all" data-favourite-button aria-pressed="true" title="Remove from favourites">
+            <iconify-icon icon="lucide:heart" class="text-lg fill-rose-500"></iconify-icon>
+        </button>
     {% else %}
         <input type="hidden" name="action" value="add">
-        <button type="submit" class="btn btn-primary btn-sm" data-favourite-button aria-pressed="false">♡ Add to favourites</button>
+        <button type="submit" class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-white/5 transition-all" data-favourite-button aria-pressed="false" title="Add to favourites">
+            <iconify-icon icon="lucide:heart" class="text-lg"></iconify-icon>
+        </button>
     {% endif %}
-    <span class="favourite-feedback" data-favourite-feedback role="status" aria-live="polite"></span>
+    <span class="text-[10px] text-indigo-400 font-semibold ml-1.5" data-favourite-feedback role="status" aria-live="polite"></span>
 </form>

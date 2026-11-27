@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
 
-{% block title %}Delete {{ playlist.title }} — Music App{% endblock %}
+{% block title %}Delete {{ playlist.title }} — Groovy{% endblock %}
 
 {% block content %}
-<div class="form-page-wrap">
-    <div class="card playlist-delete-card">
-        <h1>Delete this playlist?</h1>
-        <p><strong>{{ playlist.title }}</strong> and its saved song order will be removed. Catalogue songs will remain in the library.</p>
-        <form method="post">
-            {% csrf_token %}
-            <div class="playlist-form-actions">
-                <a href="{% url 'playlist_detail' playlist.id %}" class="btn btn-secondary">Keep Playlist</a>
-                <button type="submit" class="btn btn-danger">Confirm Delete</button>
-            </div>
-        </form>
+<div class="max-w-md mx-auto my-16 bg-[#161922] border border-rose-500/20 rounded-3xl p-8 shadow-2xl">
+    <div class="text-center mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
+            <span class="iconify text-3xl" data-icon="lucide:trash-2"></span>
+        </div>
+        <span class="px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-xs font-semibold uppercase tracking-wider">Delete Playlist</span>
+        <h2 class="text-2xl font-bold text-white mt-3">Delete {{ playlist.title }}?</h2>
     </div>
+
+    <p class="text-white/60 text-sm leading-relaxed mb-6 text-center">
+        This playlist and its track order will be permanently removed. The underlying catalogue songs will remain safe in the library.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex gap-3 justify-end">
+            <a href="{% url 'playlist_detail' playlist.id %}" class="flex-1 text-center py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium text-sm transition-all border border-white/10">
+                Keep Playlist
+            </a>
+            <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm transition-all shadow-lg shadow-rose-600/30">
+                Confirm Delete
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}

@@ -1,62 +1,81 @@
 {% extends 'base.html' %}
 
-{% block title %}Register — Music App{% endblock %}
+{% block title %}Create Account — Groovy{% endblock %}
 
 {% block content %}
-<div class="card card-auth">
-    <h2>Create an Account</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
-        Join Music App to explore songs, create playlists, and save your favourite tracks.
-    </p>
+<div class="px-6 py-12 flex items-center justify-center min-h-[calc(100vh-160px)]">
+  <div class="w-full max-w-md bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-10 shadow-2xl space-y-6">
+    
+    <!-- Logo & Title -->
+    <div class="text-center space-y-2">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/20">
+        <iconify-icon icon="lucide:user-plus" class="text-white text-2xl"></iconify-icon>
+      </div>
+      <h2 class="text-2xl font-black text-white tracking-tight pt-2">Join Groovy</h2>
+      <p class="text-xs text-slate-400">Create your account to curate playlists and save favourites</p>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
 
-        {% if form.non_field_errors %}
-            <div class="alert alert-error">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
+      {% if form.non_field_errors %}
+        <div class="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="space-y-1.5">
+        <label for="id_username" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Username</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-3 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500 [&>input]:transition-colors">
+          {{ form.username }}
+        </div>
+        {% if form.username.errors %}
+          <p class="text-[11px] text-rose-400 font-medium">{{ form.username.errors.0 }}</p>
         {% endif %}
+      </div>
 
-        <div class="form-group">
-            <label for="id_username">Username</label>
-            {{ form.username }}
-            {% if form.username.errors %}
-                <div class="error-text">{{ form.username.errors.0 }}</div>
-            {% endif %}
+      <div class="space-y-1.5">
+        <label for="id_email" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Email Address</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-3 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500 [&>input]:transition-colors">
+          {{ form.email }}
         </div>
+        {% if form.email.errors %}
+          <p class="text-[11px] text-rose-400 font-medium">{{ form.email.errors.0 }}</p>
+        {% endif %}
+      </div>
 
-        <div class="form-group">
-            <label for="id_email">Email Address</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <div class="error-text">{{ form.email.errors.0 }}</div>
-            {% endif %}
+      <div class="space-y-1.5">
+        <label for="id_password" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Password</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-3 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500 [&>input]:transition-colors">
+          {{ form.password }}
         </div>
+        {% if form.password.errors %}
+          <p class="text-[11px] text-rose-400 font-medium">{{ form.password.errors.0 }}</p>
+        {% endif %}
+      </div>
 
-        <div class="form-group">
-            <label for="id_password">Password</label>
-            {{ form.password }}
-            {% if form.password.errors %}
-                <div class="error-text">{{ form.password.errors.0 }}</div>
-            {% endif %}
+      <div class="space-y-1.5">
+        <label for="id_confirm_password" class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Confirm Password</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-3 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500 [&>input]:transition-colors">
+          {{ form.confirm_password }}
         </div>
+        {% if form.confirm_password.errors %}
+          <p class="text-[11px] text-rose-400 font-medium">{{ form.confirm_password.errors.0 }}</p>
+        {% endif %}
+      </div>
 
-        <div class="form-group">
-            <label for="id_confirm_password">Confirm Password</label>
-            {{ form.confirm_password }}
-            {% if form.confirm_password.errors %}
-                <div class="error-text">{{ form.confirm_password.errors.0 }}</div>
-            {% endif %}
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">Register Account</button>
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-[1.02] active:scale-95 mt-4">
+        Register Account
+      </button>
     </form>
 
-    <p style="margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-secondary);">
-        Already have an account? <a href="{% url 'login' %}" style="color: var(--accent-primary);">Sign In</a>
+    <p class="text-center text-xs text-slate-400">
+      Already have an account? 
+      <a href="{% url 'login' %}" class="text-indigo-400 hover:text-white font-bold transition-colors">Sign In</a>
     </p>
+
+  </div>
 </div>
 {% endblock %}

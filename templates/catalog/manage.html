@@ -1,104 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}Catalogue Management — Music App{% endblock %}
+{% block title %}Catalogue Management — Groovy{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+<div class="px-8 md:px-12 py-8 max-w-[1600px] mx-auto space-y-8">
+  
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
-        <span class="badge badge-admin">Admin Portal</span>
-        <h2 style="margin-top: 6px;">Music Catalogue Management</h2>
-        <p style="color: var(--text-secondary);">
-            Administrative tools to curate songs, artists, and musical genres. Restricted to <code>ADMIN</code> role.
-        </p>
+      <span class="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full inline-block mb-2">
+        Admin Portal
+      </span>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:sliders-horizontal" class="text-indigo-400 text-3xl"></iconify-icon>
+        <span>Music Catalogue Management</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">Curate songs, artists, and musical classifications</p>
     </div>
-    <div style="display: flex; gap: 8px;">
-        <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; View Public Catalogue</a>
-        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Admin Dashboard</a>
-    </div>
-</div>
 
-<!-- Metrics summary cards with quick-action links -->
-<div class="metrics-grid">
-    <div class="metric-card">
-        <div class="metric-label">Total Songs</div>
-        <div class="metric-value">{{ total_songs }}</div>
-        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
-            <a href="{% url 'song_manage_list' %}" class="btn btn-secondary btn-sm">Manage Songs</a>
-            <a href="{% url 'song_create' %}" class="btn btn-primary btn-sm">+ Add Song</a>
-        </div>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'catalogue_browse' %}" class="bg-white/5 hover:bg-white/10 text-white font-bold text-xs px-5 py-2.5 rounded-full border border-white/10 transition-colors">
+        &larr; Public Catalogue
+      </a>
+      <a href="{% url 'admin_dashboard' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-full transition-all shadow-md shadow-indigo-600/30">
+        Admin Dashboard
+      </a>
     </div>
-    <div class="metric-card">
-        <div class="metric-label">Total Artists</div>
-        <div class="metric-value">{{ total_artists }}</div>
-        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
-            <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary btn-sm">Manage Artists</a>
-            <a href="{% url 'artist_create' %}" class="btn btn-primary btn-sm">+ Add Artist</a>
-        </div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Total Genres</div>
-        <div class="metric-value">{{ total_genres }}</div>
-        <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
-            <a href="{% url 'genre_manage_list' %}" class="btn btn-secondary btn-sm">Manage Genres</a>
-            <a href="{% url 'genre_create' %}" class="btn btn-primary btn-sm">+ Add Genre</a>
-        </div>
-    </div>
-</div>
+  </div>
 
-<!-- Quick Navigation Bar -->
-<div class="card" style="padding: 16px 24px;">
-    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <span style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-right: 8px;">Quick Jump:</span>
-        <a href="{% url 'song_manage_list' %}" class="btn btn-secondary btn-sm">🎵 All Songs ({{ total_songs }})</a>
-        <a href="{% url 'artist_manage_list' %}" class="btn btn-secondary btn-sm">🎤 All Artists ({{ total_artists }})</a>
-        <a href="{% url 'genre_manage_list' %}" class="btn btn-secondary btn-sm">🏷️ All Genres ({{ total_genres }})</a>
+  <!-- 3 Hub Sections (Songs, Artists, Genres) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    
+    <!-- Songs Hub -->
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Songs Database</p>
+        <p class="text-4xl font-black text-white font-mono my-2">{{ total_songs }}</p>
+        <p class="text-xs text-slate-400">Total tracks registered in catalogue</p>
+      </div>
+      <div class="flex items-center gap-2 pt-4 border-t border-white/5">
+        <a href="{% url 'song_manage_list' %}" class="flex-1 bg-white/5 hover:bg-white/10 text-white text-center font-bold text-xs py-2.5 rounded-xl border border-white/5 transition-colors">
+          Manage Songs
+        </a>
+        <a href="{% url 'song_create' %}" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-center font-bold text-xs py-2.5 rounded-xl transition-all shadow-md shadow-indigo-600/30">
+          + Add Song
+        </a>
+      </div>
     </div>
-</div>
 
-<!-- Recent Songs Table -->
-<div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3>Recently Added Songs</h3>
-        <a href="{% url 'song_manage_list' %}" style="font-size: 13px; color: var(--accent-primary); text-decoration: none;">View All &rarr;</a>
+    <!-- Artists Hub -->
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Artists Database</p>
+        <p class="text-4xl font-black text-purple-400 font-mono my-2">{{ total_artists }}</p>
+        <p class="text-xs text-slate-400">Performers, discographies & biographies</p>
+      </div>
+      <div class="flex items-center gap-2 pt-4 border-t border-white/5">
+        <a href="{% url 'artist_manage_list' %}" class="flex-1 bg-white/5 hover:bg-white/10 text-white text-center font-bold text-xs py-2.5 rounded-xl border border-white/5 transition-colors">
+          Manage Artists
+        </a>
+        <a href="{% url 'artist_create' %}" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-center font-bold text-xs py-2.5 rounded-xl transition-all shadow-md shadow-purple-600/30">
+          + Add Artist
+        </a>
+      </div>
     </div>
-    <div class="table-responsive">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Artist(s)</th>
-                    <th>Album</th>
-                    <th>Duration</th>
-                    <th>Release</th>
-                    <th style="text-align: right;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for song in songs %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'song_detail' song.id %}" style="color: #ffffff; font-weight: 600; text-decoration: none;">
-                                {{ song.title }}
-                            </a>
-                        </td>
-                        <td>
-                            {% for a in song.artists.all %}
-                                {{ a.name }}{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                                —
-                            {% endfor %}
-                        </td>
-                        <td>{{ song.album_name|default:"—" }}</td>
-                        <td>{{ song.formatted_duration }}</td>
-                        <td>{{ song.release_year|default:"—" }}</td>
-                        <td style="text-align: right;">
-                            <a href="{% url 'song_update' song.id %}" class="btn btn-secondary btn-sm">Edit</a>
-                            <a href="{% url 'song_delete' song.id %}" class="btn btn-danger btn-sm">Delete</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Genres Hub -->
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Genres Database</p>
+        <p class="text-4xl font-black text-emerald-400 font-mono my-2">{{ total_genres }}</p>
+        <p class="text-xs text-slate-400">Classifications & musical categories</p>
+      </div>
+      <div class="flex items-center gap-2 pt-4 border-t border-white/5">
+        <a href="{% url 'genre_manage_list' %}" class="flex-1 bg-white/5 hover:bg-white/10 text-white text-center font-bold text-xs py-2.5 rounded-xl border border-white/5 transition-colors">
+          Manage Genres
+        </a>
+        <a href="{% url 'genre_create' %}" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold text-xs py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/30">
+          + Add Genre
+        </a>
+      </div>
     </div>
+
+  </div>
+
 </div>
 {% endblock %}

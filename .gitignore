@@ -47,6 +47,7 @@ local_settings.py
 # Note: SQLite database file is ignored during production/collaboration to prevent binary conflicts
 *.sqlite3
 db.sqlite3-journal
+db.sqlite3.backup_*
 *.bak
 database/backups/
 

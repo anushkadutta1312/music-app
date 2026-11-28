@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Count, Max
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods, require_POST
@@ -118,8 +118,29 @@ def playlist_delete_view(request, playlist_id):
 
 
 @login_required
-@require_POST
 def playlist_add_song_view(request, song_id):
+    if request.method == 'GET' and 'playlist_id' in request.GET:
+        return HttpResponseNotAllowed(['POST'])
+
+    try:
+        song = Song.objects.get(pk=song_id)
+    except Song.DoesNotExist:
+        if _wants_json(request):
+            return JsonResponse({'success': False, 'error': 'Song not found.'}, status=404)
+        raise Http404('Song not found.')
+
+    if request.method == 'GET':
+        user_playlists = Playlist.objects.filter(owner=request.user).order_by('-updated_at')
+        existing_playlist_ids = set(
+            PlaylistSong.objects.filter(playlist__in=user_playlists, song=song)
+            .values_list('playlist_id', flat=True)
+        )
+        return render(request, 'playlists/add_song.html', {
+            'song': song,
+            'user_playlists': user_playlists,
+            'existing_playlist_ids': existing_playlist_ids,
+        })
+
     playlist_id = request.POST.get('playlist_id', '').strip()
     try:
         playlist_id = int(playlist_id)
@@ -132,13 +153,6 @@ def playlist_add_song_view(request, song_id):
     except Playlist.DoesNotExist:
         response = _json_error(request, 'Playlist not found.', 404)
         return response or redirect('playlist_list')
-
-    try:
-        song = Song.objects.get(pk=song_id)
-    except Song.DoesNotExist:
-        if _wants_json(request):
-            return JsonResponse({'success': False, 'error': 'Song not found.'}, status=404)
-        raise Http404('Song not found.')
 
     with transaction.atomic():
         tracks = list(
@@ -163,7 +177,7 @@ def playlist_add_song_view(request, song_id):
             'message': message,
         })
     messages.success(request, message)
-    return redirect('song_detail', pk=song.pk)
+    return redirect('playlist_detail', playlist_id=playlist.pk)
 
 
 @login_required

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Add {{ song.title }} to Playlist — Groovy{% endblock %}
+
+{% block content %}
+<div class="px-8 md:px-12 py-10 max-w-3xl mx-auto space-y-8">
+  
+  <!-- Back Link -->
+  <div class="flex items-center justify-between">
+    <a href="{% url 'song_detail' song.id %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+      <span>Back to Track Details</span>
+    </a>
+    <a href="{% url 'playlist_create' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+      <iconify-icon icon="lucide:plus"></iconify-icon>
+      <span>Create New Playlist</span>
+    </a>
+  </div>
+
+  <!-- Header Card: Song Info -->
+  <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-2xl flex items-center gap-6">
+    <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-white/5 border border-white/10 shrink-0 relative flex items-center justify-center shadow-lg">
+      {% if song.cover_image_url %}
+        <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+      {% endif %}
+      <iconify-icon icon="lucide:disc" class="text-3xl text-indigo-400/60"></iconify-icon>
+    </div>
+    <div class="min-w-0 flex-1">
+      <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400 mb-1 block">Adding to Playlist</span>
+      <h1 class="text-2xl font-black text-white tracking-tight truncate">{{ song.title }}</h1>
+      <p class="text-sm font-semibold text-slate-400 truncate mt-1">
+        {{ song.artists.all|join:", "|default:"Unknown Artist" }}
+        {% if song.album_name %} • <span class="text-slate-500">{{ song.album_name }}</span>{% endif %}
+      </p>
+      <div class="flex items-center gap-3 mt-2 text-xs text-slate-500">
+        <span>{{ song.formatted_duration }}</span>
+        {% for genre in song.genres.all|slice:":2" %}
+          <span>•</span>
+          <span class="text-indigo-400">{{ genre.name }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Choose Destination Playlist -->
+  <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+    <div>
+      <h2 class="text-lg font-bold text-white flex items-center gap-2">
+        <iconify-icon icon="lucide:list-plus" class="text-indigo-400 text-xl"></iconify-icon>
+        <span>Choose Destination Playlist</span>
+      </h2>
+      <p class="text-xs text-slate-400 mt-1">Select one of your playlists to add this track.</p>
+    </div>
+
+    {% if user_playlists %}
+      <div class="space-y-3">
+        {% for playlist in user_playlists %}
+          <div class="bg-[#0f0f12] border border-white/5 hover:border-indigo-500/40 rounded-2xl p-4 flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-4 min-w-0">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-white/5 flex items-center justify-center shrink-0 overflow-hidden">
+                {% if playlist.cover_image_url %}
+                  <img src="{{ playlist.cover_image_url }}" alt="{{ playlist.title }}" class="w-full h-full object-cover">
+                {% else %}
+                  <iconify-icon icon="lucide:library" class="text-xl text-indigo-400"></iconify-icon>
+                {% endif %}
+              </div>
+              <div class="min-w-0">
+                <strong class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors block truncate">
+                  {{ playlist.title }}
+                </strong>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  {{ playlist.song_count }} track{{ playlist.song_count|pluralize }}
+                </p>
+              </div>
+            </div>
+
+            <div class="shrink-0 ml-4">
+              {% if playlist.id in existing_playlist_ids %}
+                <span class="text-xs text-emerald-400 font-semibold px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
+                  <iconify-icon icon="lucide:check" class="text-sm"></iconify-icon>
+                  <span>Already Added</span>
+                </span>
+              {% else %}
+                <form method="post" action="{% url 'playlist_add_song' song.id %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="playlist_id" value="{{ playlist.id }}">
+                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5">
+                    <iconify-icon icon="lucide:plus" class="text-sm"></iconify-icon>
+                    <span>Add</span>
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 px-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
+          <iconify-icon icon="lucide:library" class="text-2xl"></iconify-icon>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">No Playlists Created Yet</h3>
+          <p class="text-xs text-slate-400 mt-1">Create your first playlist to begin curating your music library.</p>
+        </div>
+        <a href="{% url 'playlist_create' %}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon icon="lucide:plus"></iconify-icon>
+          <span>Create Playlist</span>
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

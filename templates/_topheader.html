@@ -3,8 +3,8 @@
   <!-- Left: Mobile Menu Toggle + Logo + Nav Pills -->
   <div class="flex items-center gap-3 sm:gap-6 min-w-0">
     <!-- Mobile Hamburger Button -->
-    <button id="sidebar-toggle-btn" type="button" class="lg:hidden text-slate-300 hover:text-white p-2 -ml-1 rounded-xl hover:bg-white/5 transition-colors focus:outline-none shrink-0" aria-label="Open navigation menu">
-      <iconify-icon icon="lucide:menu" class="text-2xl block"></iconify-icon>
+    <button id="sidebar-toggle-btn" onclick="window.openMobileDrawer && window.openMobileDrawer()" type="button" class="lg:hidden text-slate-300 hover:text-white p-2 -ml-1 rounded-xl hover:bg-white/5 transition-colors focus:outline-none shrink-0 cursor-pointer" aria-label="Open navigation menu">
+      <iconify-icon icon="lucide:menu" class="text-2xl block pointer-events-none"></iconify-icon>
     </button>
 
     <!-- Mobile Brand Logo -->

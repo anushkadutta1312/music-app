@@ -110,6 +110,9 @@
 </head>
 <body class="bg-[#0a0a0c] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
 
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm hidden lg:hidden transition-opacity duration-300" onclick="window.closeMobileDrawer && window.closeMobileDrawer()"></div>
+
     <!-- Main Application Shell -->
     <div class="flex h-screen w-full bg-[#0a0a0c] overflow-hidden">
         
@@ -304,39 +307,62 @@
                 form.removeAttribute('aria-busy');
             }
         }, true);
-            } finally {
-                btn.disabled = false;
-                form.removeAttribute('aria-busy');
-            }
-        }, true);
-        // Mobile Drawer Controller
+    })();
+
+    // Mobile Drawer Controller (Global handlers for inline + listeners)
+    window.openMobileDrawer = function() {
         const appSidebar = document.getElementById('app-sidebar');
         const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        if (appSidebar) {
+            appSidebar.classList.remove('-translate-x-full');
+            appSidebar.classList.add('translate-x-0');
+        }
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+    };
+
+    window.closeMobileDrawer = function() {
+        const appSidebar = document.getElementById('app-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        if (appSidebar) {
+            appSidebar.classList.remove('translate-x-0');
+            appSidebar.classList.add('-translate-x-full');
+        }
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+    };
+
+    window.toggleMobileDrawer = function() {
+        const appSidebar = document.getElementById('app-sidebar');
+        if (appSidebar && appSidebar.classList.contains('-translate-x-full')) {
+            window.openMobileDrawer();
+        } else {
+            window.closeMobileDrawer();
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
         const toggleBtn = document.getElementById('sidebar-toggle-btn');
         const closeBtn = document.getElementById('sidebar-close-btn');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const appSidebar = document.getElementById('app-sidebar');
 
-        const openDrawer = () => {
-            if (appSidebar) appSidebar.classList.remove('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
-        };
-
-        const closeDrawer = () => {
-            if (appSidebar) appSidebar.classList.add('-translate-x-full');
-            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
-        };
-
-        if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
-        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-        if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeDrawer);
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', window.openMobileDrawer);
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', window.closeMobileDrawer);
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', window.closeMobileDrawer);
+        }
 
         if (appSidebar) {
-            appSidebar.querySelectorAll('a').forEach((link) => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 1024) closeDrawer();
+            appSidebar.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) window.closeMobileDrawer();
                 });
             });
         }
-    })();
+    });
     </script>
 </body>
 </html>

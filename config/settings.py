@@ -29,7 +29,7 @@ if not DEBUG and not allowed_hosts_setting:
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in (allowed_hosts_setting or '127.0.0.1,localhost,testserver').split(',')
+    for host in (allowed_hosts_setting or ('*' if DEBUG else '127.0.0.1,localhost,testserver')).split(',')
     if host.strip()
 ]
 if not DEBUG:

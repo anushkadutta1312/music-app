@@ -145,14 +145,14 @@
             <section class="fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-[#101014]/95 backdrop-blur-xl border-t border-white/5 px-4 md:px-8 flex items-center justify-between z-50 shadow-2xl transition-all" data-site-player data-player-state="idle" aria-label="Music player">
                 <audio data-audio-player preload="none" playsinline aria-label="Selected music sample"></audio>
                 
-                <!-- Left: Current Track Details -->
-                <div class="flex items-center gap-3 md:gap-4 flex-1 md:flex-initial md:w-72 shrink-0 min-w-0 mr-2 md:mr-0">
-                    <div class="w-11 h-11 md:w-14 md:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/5 relative shrink-0 flex items-center justify-center shadow-md">
+                <!-- Left: Current Track Details (Tap to Open Full-Screen Player) -->
+                <div class="flex items-center gap-3 md:gap-4 flex-1 md:flex-initial md:w-72 shrink-0 min-w-0 mr-2 md:mr-0 cursor-pointer group" data-open-fullscreen-player title="Open full-screen player">
+                    <div class="w-11 h-11 md:w-14 md:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/5 relative shrink-0 flex items-center justify-center shadow-md group-hover:border-indigo-500/50 transition-colors">
                         <img data-player-artwork alt="" class="w-full h-full object-cover" hidden>
                         <iconify-icon data-player-artwork-fallback icon="lucide:disc" class="text-indigo-400 text-xl md:text-2xl"></iconify-icon>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <strong data-player-title class="block text-xs md:text-sm font-bold text-white truncate">Choose a song to play</strong>
+                        <strong data-player-title class="block text-xs md:text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">Choose a song to play</strong>
                         <span data-player-artist class="block text-[11px] md:text-xs text-slate-400 truncate mt-0.5">Groovy collection</span>
                     </div>
                 </div>
@@ -185,14 +185,139 @@
                 </div>
 
                 <!-- Right: Volume & Utilities (Desktop only) -->
-                <div class="hidden md:flex items-center justify-end gap-4 w-72 shrink-0" role="group" aria-label="Volume controls">
+                <div class="hidden md:flex items-center justify-end gap-3.5 w-72 shrink-0" role="group" aria-label="Volume controls">
                     <button type="button" data-player-mute aria-label="Mute" disabled class="text-slate-400 hover:text-white disabled:opacity-30 transition-colors p-1">
                         <iconify-icon icon="lucide:volume-2" class="text-lg"></iconify-icon>
                     </button>
-                    <input type="range" min="0" max="1" step="0.01" value="0.8" data-player-volume aria-label="Volume" disabled class="w-24 h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-500 transition-all disabled:opacity-40">
-                    <a href="/media/audio/ATTRIBUTION.md" target="_blank" rel="noopener" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-400 transition-colors ml-2">Credits</a>
+                    <input type="range" min="0" max="1" step="0.01" value="0.8" data-player-volume aria-label="Volume" disabled class="w-20 h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-500 transition-all disabled:opacity-40">
+                    <button type="button" data-open-fullscreen-player aria-label="Open fullscreen player" class="text-slate-400 hover:text-white p-1 transition-colors cursor-pointer" title="Full screen now playing">
+                        <iconify-icon icon="lucide:maximize-2" class="text-base"></iconify-icon>
+                    </button>
+                    <a href="/media/audio/ATTRIBUTION.md" target="_blank" rel="noopener" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-400 transition-colors ml-1">Credits</a>
                 </div>
             </section>
+
+            <!-- Full-Screen Now Playing Player (Spotify-Style Slide-Up Modal) -->
+            <div id="fullscreen-player-modal"
+                 class="fixed inset-0 z-[100] bg-gradient-to-b from-[#181a24] via-[#0d0e12] to-[#070709] text-white flex flex-col justify-between p-6 sm:p-8 transform translate-y-full transition-transform duration-300 ease-out select-none"
+                 aria-modal="true"
+                 role="dialog"
+                 aria-label="Now playing fullscreen player">
+              
+              <!-- Top Bar: Dismiss Chevron + Header Title + Close -->
+              <div class="flex items-center justify-between shrink-0 pt-2">
+                <button type="button"
+                        id="close-fullscreen-player-btn"
+                        class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
+                        aria-label="Dismiss fullscreen player">
+                  <iconify-icon icon="lucide:chevron-down" class="text-2xl pointer-events-none"></iconify-icon>
+                </button>
+                
+                <div class="text-center min-w-0 px-4">
+                  <p class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-indigo-400">PLAYING FROM COLLECTION</p>
+                  <p data-fs-album class="text-xs font-bold text-slate-400 truncate mt-0.5">Groovy Music Player</p>
+                </div>
+
+                <div class="w-10 h-10 flex items-center justify-center">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                </div>
+              </div>
+
+              <!-- Center: Large Artwork with Ambient Glow -->
+              <div class="flex-1 flex items-center justify-center py-6 min-h-0">
+                <div class="relative w-full max-w-[320px] sm:max-w-[360px] aspect-square rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_80px_rgba(88,101,242,0.25)] border border-white/10 bg-[#121318] group">
+                  <img data-fs-artwork alt="" class="w-full h-full object-cover" hidden>
+                  <div data-fs-artwork-fallback class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-900/40 to-purple-900/40">
+                    <iconify-icon icon="lucide:disc" class="text-7xl text-indigo-400"></iconify-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom: Track Info + Seekbar + Main Controls + Utilities -->
+              <div class="shrink-0 space-y-6 max-w-md mx-auto w-full pb-4">
+                
+                <!-- Title & Artist -->
+                <div class="text-center sm:text-left">
+                  <h2 data-fs-title class="text-2xl sm:text-3xl font-black text-white truncate tracking-tight">Choose a song to play</h2>
+                  <p data-fs-artist class="text-sm sm:text-base font-semibold text-slate-400 truncate mt-1">Groovy collection</p>
+                </div>
+
+                <!-- Seekbar & Time Display -->
+                <div class="space-y-2">
+                  <div class="relative flex items-center">
+                    <input type="range"
+                           min="0"
+                           max="1000"
+                           value="0"
+                           data-fs-seek
+                           aria-label="Seek track"
+                           disabled
+                           class="w-full h-1.5 bg-white/15 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:h-2 transition-all disabled:opacity-40">
+                  </div>
+                  <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-400">
+                    <span data-fs-current-time>0:00</span>
+                    <span data-fs-duration>0:00</span>
+                  </div>
+                </div>
+
+                <!-- Main Playback Controls (Shuffle, Prev, Play/Pause, Next, Repeat) -->
+                <div class="flex items-center justify-between px-2">
+                  <button type="button"
+                          data-fs-shuffle
+                          class="text-slate-400 hover:text-white transition-colors p-2 text-xl cursor-pointer"
+                          title="Shuffle">
+                    <iconify-icon icon="lucide:shuffle"></iconify-icon>
+                  </button>
+
+                  <button type="button"
+                          data-fs-previous
+                          disabled
+                          class="text-white hover:text-indigo-400 disabled:opacity-30 transition-colors p-2 text-2xl active:scale-90 cursor-pointer"
+                          title="Previous">
+                    <iconify-icon icon="lucide:skip-back"></iconify-icon>
+                  </button>
+
+                  <button type="button"
+                          data-fs-toggle
+                          disabled
+                          class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-white text-black flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
+                          aria-label="Play / Pause">
+                    <iconify-icon icon="lucide:play" class="text-3xl ml-1 text-black"></iconify-icon>
+                  </button>
+
+                  <button type="button"
+                          data-fs-next
+                          disabled
+                          class="text-white hover:text-indigo-400 disabled:opacity-30 transition-colors p-2 text-2xl active:scale-90 cursor-pointer"
+                          title="Next">
+                    <iconify-icon icon="lucide:skip-forward"></iconify-icon>
+                  </button>
+
+                  <button type="button"
+                          data-fs-repeat
+                          class="text-slate-400 hover:text-white transition-colors p-2 text-xl cursor-pointer"
+                          title="Repeat">
+                    <iconify-icon icon="lucide:repeat"></iconify-icon>
+                  </button>
+                </div>
+
+                <!-- Bottom Actions: Quality Badge & Browse Queue -->
+                <div class="flex items-center justify-between pt-2 px-1 text-slate-400">
+                  <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Hi-Fi Stereo</span>
+                  </div>
+                  <a href="{% url 'catalogue_browse' %}"
+                     onclick="window.closeFullScreenPlayer && window.closeFullScreenPlayer()"
+                     class="text-xs font-bold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 text-decoration-none">
+                    <iconify-icon icon="lucide:list-music"></iconify-icon>
+                    <span>Browse All Songs</span>
+                  </a>
+                </div>
+
+              </div>
+
+            </div>
         </main>
     </div>
 

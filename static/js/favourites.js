@@ -6,6 +6,10 @@
         return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : '';
     };
 
+    const filledHeartSvg = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="sr-only">♥ Remove from favourites</span>';
+
+    const outlineHeartSvg = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span class="sr-only">♡ Add to favourites</span>';
+
     const showToast = (message, isFavourited) => {
         let container = document.getElementById('toast-container');
         if (!container) {
@@ -19,7 +23,7 @@
         toast.className = 'pointer-events-auto bg-[#181a22] text-white border border-white/10 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5 text-xs font-semibold transform transition-all duration-300 translate-y-3 opacity-0 backdrop-blur-xl';
         toast.innerHTML = `
             <div class="w-8 h-8 rounded-xl ${isFavourited ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-white/10 text-slate-400 border border-white/10'} flex items-center justify-center shrink-0 shadow-lg">
-                <iconify-icon icon="lucide:heart" class="text-base ${isFavourited ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}"></iconify-icon>
+                ${isFavourited ? '<svg class="w-4 h-4 text-rose-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' : '<svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}
             </div>
             <div class="flex flex-col">
                 <span class="text-white font-bold text-xs">${message}</span>
@@ -40,7 +44,6 @@
         }, 2400);
     };
 
-    // Attach in capture phase to run before any cached listener
     document.addEventListener('submit', async (event) => {
         const form = event.target.closest('[data-favourite-form]');
         if (!form) return;
@@ -75,18 +78,16 @@
             button.setAttribute('aria-pressed', String(isFavourited));
             button.title = isFavourited ? 'Remove from favourites' : 'Add to favourites';
 
-            // Only update icon without changing button dimensions or adding wide text
             if (isFavourited) {
                 button.className = 'p-2 rounded-xl text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all focus:outline-none';
-                button.innerHTML = '<iconify-icon icon="lucide:heart" class="text-lg fill-rose-500 text-rose-500 block pointer-events-none"></iconify-icon><span class="sr-only">♥ Remove from favourites</span>';
+                button.innerHTML = filledHeartSvg;
             } else {
                 button.className = 'p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-white/5 transition-all focus:outline-none';
-                button.innerHTML = '<iconify-icon icon="lucide:heart" class="text-lg text-slate-400 hover:text-rose-400 block pointer-events-none"></iconify-icon><span class="sr-only">♡ Add to favourites</span>';
+                button.innerHTML = outlineHeartSvg;
             }
 
             showToast(result.message || (isFavourited ? 'Song added to favourites' : 'Song removed from favourites'), isFavourited);
 
-            // If on favourites page with remove-card flag, smoothly remove the row/card
             if (!isFavourited && form.dataset.removeCardOnUnsave === 'true') {
                 const card = form.closest('.song-card') || form.closest('.group');
                 const grid = form.closest('[data-favourites-grid]');

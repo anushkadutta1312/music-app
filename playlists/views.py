@@ -177,7 +177,7 @@ def playlist_add_song_view(request, song_id):
             'message': message,
         })
     messages.success(request, message)
-    return redirect('playlist_detail', playlist_id=playlist.pk)
+    return redirect('song_detail', pk=song.pk)
 
 
 @login_required
@@ -230,3 +230,4 @@ def playlist_song_action_view(request, playlist_id, song_id):
         })
     messages.success(request, message)
     return redirect('playlist_detail', playlist_id=playlist.pk)
+# End of views

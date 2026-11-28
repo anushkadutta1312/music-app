@@ -3,9 +3,9 @@
 {% block title %}{{ song.title }} — Groovy Player{% endblock %}
 
 {% block content %}
-<div class="px-8 md:px-12 py-10 max-w-[1200px] mx-auto" data-player-queue>
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-10 max-w-[1200px] mx-auto" data-player-queue>
   
-  <div class="mb-8 flex items-center justify-between">
+  <div class="mb-6 md:mb-8 flex items-center justify-between">
     <a href="{% url 'catalogue_browse' %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
       <iconify-icon icon="lucide:arrow-left"></iconify-icon>
       <span>Back to Catalogue</span>
@@ -13,10 +13,10 @@
     
     {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
       <div class="flex items-center gap-2">
-        <a href="{% url 'song_update' song.id %}" class="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">
+        <a href="{% url 'song_update' song.id %}" class="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-3 sm:px-4 py-2 rounded-xl transition-all">
           Edit Track
         </a>
-        <a href="{% url 'song_delete' song.id %}" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs px-4 py-2 rounded-xl transition-all">
+        <a href="{% url 'song_delete' song.id %}" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs px-3 sm:px-4 py-2 rounded-xl transition-all">
           Delete Track
         </a>
       </div>
@@ -24,13 +24,13 @@
   </div>
 
   <!-- Main Player Display (Groovy Draft fd1ad58c) -->
-  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 md:p-14 shadow-2xl relative overflow-hidden">
     
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
       
       <!-- Left: Artwork with Ambient Glow & Animated Visualizer -->
       <div class="flex flex-col items-center">
-        <div class="relative w-72 md:w-88 aspect-square rounded-[2rem] overflow-hidden shadow-2xl album-glow border border-white/10 bg-[#0a0a0c] mb-8 group">
+        <div class="relative w-56 sm:w-72 md:w-88 aspect-square rounded-[2rem] overflow-hidden shadow-2xl album-glow border border-white/10 bg-[#0a0a0c] mb-6 md:mb-8 group">
           {% if song.cover_image_url %}
             <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=600';">
           {% else %}
@@ -129,7 +129,7 @@
               </button>
             {% else %}
               <div class="bg-white/5 border border-white/10 text-slate-400 font-semibold text-xs px-6 py-3.5 rounded-full">
-                Catalogue record • Audio file not linked
+                Audio sample not available
               </div>
             {% endif %}
           {% endwith %}

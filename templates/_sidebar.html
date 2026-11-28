@@ -1,13 +1,16 @@
 {% load static %}
-<aside class="w-64 flex flex-col border-r border-white/5 bg-[#0f0f12] h-full shrink-0 select-none">
-  <!-- Brand Logo -->
-  <div class="p-8 flex items-center gap-3">
+<aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#0f0f12] flex flex-col border-r border-white/5 h-full shrink-0 select-none transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64 lg:z-auto shadow-2xl lg:shadow-none">
+  <!-- Brand Logo & Mobile Close -->
+  <div class="p-6 lg:p-8 flex items-center justify-between">
     <a href="{% url 'home' %}" class="flex items-center gap-3 text-white text-decoration-none group">
       <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
         <iconify-icon icon="lucide:audio-lines" class="text-white text-xl"></iconify-icon>
       </div>
       <span class="text-xl font-bold tracking-tight text-white">Groovy</span>
     </a>
+    <button id="sidebar-close-btn" type="button" class="lg:hidden text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/5 transition-colors" aria-label="Close menu">
+      <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
+    </button>
   </div>
 
   <!-- Navigation Links -->
@@ -66,26 +69,6 @@
               <span>Playlists</span>
             </a>
           </li>
-          {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
-            <li>
-              <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'admin_dashboard' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
-                <iconify-icon icon="lucide:shield-check" class="text-lg text-amber-400"></iconify-icon>
-                <span>Admin Hub</span>
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'song_create' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'song_create' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
-                <iconify-icon icon="lucide:upload-cloud" class="text-lg text-indigo-400"></iconify-icon>
-                <span>Upload Song</span>
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'catalogue_manage' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 {% if request.resolver_match.url_name == 'catalogue_manage' %}text-[#5865f2] bg-indigo-500/10 font-bold{% else %}text-slate-400 hover:text-white hover:bg-white/5{% endif %}">
-                <iconify-icon icon="lucide:sliders-horizontal" class="text-lg"></iconify-icon>
-                <span>Manage Music</span>
-              </a>
-            </li>
-          {% endif %}
         {% else %}
           <li>
             <a href="{% url 'login' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
@@ -93,90 +76,96 @@
               <span>Sign In</span>
             </a>
           </li>
-          <li>
-            <a href="{% url 'register' %}" class="flex items-center gap-3.5 text-sm font-medium transition-all rounded-xl px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5">
-              <iconify-icon icon="lucide:user-plus" class="text-lg"></iconify-icon>
-              <span>Create Account</span>
-            </a>
-          </li>
         {% endif %}
       </ul>
     </div>
 
-    <!-- Playlists Section -->
-    <div>
-      <div class="flex items-center justify-between px-2 mb-3">
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Playlists</p>
-        {% if user.is_authenticated %}
-          <a href="{% url 'playlist_create' %}" class="text-indigo-400 hover:text-white transition-colors" title="Create Playlist">
+    <!-- Playlists Quick Section -->
+    {% if user.is_authenticated %}
+      <div>
+        <div class="flex items-center justify-between mb-3 px-2">
+          <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Playlists</p>
+          <a href="{% url 'playlist_create' %}" class="text-slate-500 hover:text-white transition-colors" title="Create Playlist">
             <iconify-icon icon="lucide:plus-circle" class="text-base"></iconify-icon>
           </a>
-        {% endif %}
-      </div>
-      <ul class="space-y-1">
-        {% if user.is_authenticated %}
+        </div>
+        <ul class="space-y-1">
           <li>
-            <a href="{% url 'playlist_create' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-              <iconify-icon icon="lucide:plus-square" class="text-base text-indigo-500"></iconify-icon>
+            <a href="{% url 'playlist_create' %}" class="flex items-center gap-3 text-xs font-semibold text-indigo-400 hover:text-indigo-300 py-2 px-3 rounded-xl hover:bg-white/5 transition-all">
+              <iconify-icon icon="lucide:plus-square" class="text-base"></iconify-icon>
               <span>Create New</span>
             </a>
           </li>
-        {% endif %}
-        <li>
-          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            <iconify-icon icon="lucide:play-circle" class="text-base text-emerald-400"></iconify-icon>
-            <span>Curator's Showcase</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            <iconify-icon icon="lucide:play-circle" class="text-base text-orange-400"></iconify-icon>
-            <span>Midnight Jazz Club</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'playlist_list' %}" class="flex items-center gap-3 text-sm font-medium text-slate-400 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            <iconify-icon icon="lucide:play-circle" class="text-base text-purple-400"></iconify-icon>
-            <span>Golden Age Hip-Hop</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+          {% for pl in user_sidebar_playlists %}
+            <li>
+              <a href="{% url 'playlist_detail' pl.id %}" class="flex items-center gap-3 text-xs text-slate-400 hover:text-white py-1.5 px-3 rounded-xl hover:bg-white/5 transition-colors truncate">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
+                <span class="truncate">{{ pl.title }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <!-- Admin Tools Section -->
+    {% if user.is_authenticated and user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+      <div class="pt-4 border-t border-white/5">
+        <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3 px-2">Admin Tools</p>
+        <ul class="space-y-1">
+          <li>
+            <a href="{% url 'song_create' %}" class="flex items-center gap-3 text-xs font-semibold text-indigo-400 hover:text-indigo-300 py-2 px-3 rounded-xl hover:bg-white/5 transition-all">
+              <iconify-icon icon="lucide:upload-cloud" class="text-base"></iconify-icon>
+              <span>Upload Song</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'catalogue_manage' %}" class="flex items-center gap-3 text-xs text-slate-400 hover:text-white py-2 px-3 rounded-xl hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:sliders-horizontal" class="text-base"></iconify-icon>
+              <span>Catalogue Hub</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'admin_dashboard' %}" class="flex items-center gap-3 text-xs text-slate-400 hover:text-white py-2 px-3 rounded-xl hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:shield-check" class="text-base"></iconify-icon>
+              <span>Admin Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/" target="_blank" class="flex items-center gap-3 text-xs text-slate-400 hover:text-white py-2 px-3 rounded-xl hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:database" class="text-base"></iconify-icon>
+              <span>Django Admin Portal</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
   </nav>
 
-  <!-- User Profile Rail Footer -->
-  <div class="p-5 mt-auto border-t border-white/5 bg-[#0a0a0c]/60">
+  <!-- User Profile Card -->
+  <div class="p-4 border-t border-white/5 bg-[#0a0a0c]/60">
     {% if user.is_authenticated %}
-      <div class="bg-white/5 rounded-2xl p-3 flex items-center gap-3 border border-white/5">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md">
-          {{ user.username|make_list|first|upper }}
+      <a href="{% url 'profile' %}" class="flex items-center gap-3 p-2 rounded-2xl hover:bg-white/5 transition-all text-decoration-none group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs shadow-md shrink-0">
+          {{ user.username|slice:":2"|upper }}
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-white truncate">{{ user.username }}</p>
-          <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider">
-            {{ user.profile.role|default:"MEMBER" }}
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-bold text-white truncate group-hover:text-indigo-400 transition-colors">
+            {{ user.profile.display_name|default:user.username }}
+          </p>
+          <span class="text-[10px] text-slate-400 font-mono capitalize">
+            {{ user.profile.role|lower }}
           </span>
         </div>
-        <div class="flex items-center gap-1">
-          <a href="{% url 'profile' %}" class="p-1.5 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/10" title="Profile Settings">
-            <iconify-icon icon="lucide:settings" class="text-base"></iconify-icon>
-          </a>
-          <form method="POST" action="{% url 'logout' %}" class="inline">
-            {% csrf_token %}
-            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-400 transition-colors rounded-lg hover:bg-white/10" title="Logout">
-              <iconify-icon icon="lucide:log-out" class="text-base"></iconify-icon>
-            </button>
-          </form>
-        </div>
-      </div>
+        <iconify-icon icon="lucide:chevron-right" class="text-slate-500 text-sm group-hover:translate-x-0.5 transition-transform"></iconify-icon>
+      </a>
     {% else %}
-      <div class="space-y-2">
-        <a href="{% url 'login' %}" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20">
-          <iconify-icon icon="lucide:log-in"></iconify-icon>
-          <span>Sign In</span>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'login' %}" class="flex-1 text-center py-2 text-xs font-bold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all">
+          Sign In
         </a>
-        <a href="{% url 'register' %}" class="w-full bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 border border-white/5 transition-colors">
-          <span>Create Account</span>
+        <a href="{% url 'register' %}" class="flex-1 text-center py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-md shadow-indigo-600/20">
+          Sign Up
         </a>
       </div>
     {% endif %}

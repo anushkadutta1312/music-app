@@ -6,16 +6,16 @@
         return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : '';
     };
 
-    const filledHeartSvg = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="sr-only">♥ Remove from favourites</span>';
+    const filledHeartSvg = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 
-    const outlineHeartSvg = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span class="sr-only">♡ Add to favourites</span>';
+    const outlineHeartSvg = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
 
     const showToast = (message, isFavourited) => {
         let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');
             container.id = 'toast-container';
-            container.className = 'fixed top-6 right-6 md:bottom-28 md:right-8 z-[9999] flex flex-col gap-2.5 pointer-events-none select-none';
+            container.className = 'fixed top-4 left-4 right-4 sm:left-auto sm:right-6 md:bottom-28 md:top-auto md:right-8 z-[9999] flex flex-col gap-2.5 pointer-events-none select-none';
             document.body.appendChild(container);
         }
 
@@ -76,6 +76,7 @@
             const isFavourited = result.is_favourited;
             actionInput.value = isFavourited ? 'remove' : 'add';
             button.setAttribute('aria-pressed', String(isFavourited));
+            button.setAttribute('aria-label', isFavourited ? 'Remove from favourites' : 'Add to favourites');
             button.title = isFavourited ? 'Remove from favourites' : 'Add to favourites';
 
             if (isFavourited) {

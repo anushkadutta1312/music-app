@@ -63,6 +63,17 @@
         background: #252830;
         border-radius: 10px;
       }
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border-width: 0 !important;
+      }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #3b4252;
       }
@@ -128,30 +139,30 @@
             </div>
 
             <!-- Persistent Bottom Audio Player Bar (Groovy Design) -->
-            <section class="fixed bottom-0 left-0 right-0 h-24 bg-[#101014]/95 backdrop-blur-xl border-t border-white/5 px-8 flex items-center justify-between z-50 shadow-2xl transition-all" data-site-player data-player-state="idle" aria-label="Music player">
+            <section class="fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-[#101014]/95 backdrop-blur-xl border-t border-white/5 px-4 md:px-8 flex items-center justify-between z-50 shadow-2xl transition-all" data-site-player data-player-state="idle" aria-label="Music player">
                 <audio data-audio-player preload="none" playsinline aria-label="Selected music sample"></audio>
                 
                 <!-- Left: Current Track Details -->
-                <div class="flex items-center gap-4 w-72 shrink-0">
-                    <div class="w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/5 relative shrink-0 flex items-center justify-center shadow-md">
+                <div class="flex items-center gap-3 md:gap-4 flex-1 md:flex-initial md:w-72 shrink-0 min-w-0 mr-2 md:mr-0">
+                    <div class="w-11 h-11 md:w-14 md:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/5 relative shrink-0 flex items-center justify-center shadow-md">
                         <img data-player-artwork alt="" class="w-full h-full object-cover" hidden>
-                        <iconify-icon data-player-artwork-fallback icon="lucide:disc" class="text-indigo-400 text-2xl"></iconify-icon>
+                        <iconify-icon data-player-artwork-fallback icon="lucide:disc" class="text-indigo-400 text-xl md:text-2xl"></iconify-icon>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <strong data-player-title class="block text-sm font-bold text-white truncate">Choose a song to play</strong>
-                        <span data-player-artist class="block text-xs text-slate-400 truncate mt-0.5">Groovy sample collection</span>
+                        <strong data-player-title class="block text-xs md:text-sm font-bold text-white truncate">Choose a song to play</strong>
+                        <span data-player-artist class="block text-[11px] md:text-xs text-slate-400 truncate mt-0.5">Groovy collection</span>
                     </div>
                 </div>
 
                 <!-- Center: Main Playback & Seek Controls -->
-                <div class="flex flex-col items-center gap-1.5 max-w-xl w-full px-6">
-                    <div class="flex items-center gap-6" role="group" aria-label="Playback controls">
-                        <button type="button" data-player-previous aria-label="Previous track" disabled class="text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors p-1">
+                <div class="flex flex-col items-center gap-1.5 md:max-w-xl md:w-full md:px-6 shrink-0 md:shrink">
+                    <div class="flex items-center gap-3 sm:gap-6" role="group" aria-label="Playback controls">
+                        <button type="button" data-player-previous aria-label="Previous track" disabled class="hidden sm:inline-block text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors p-1">
                             <iconify-icon icon="lucide:skip-back" class="text-lg"></iconify-icon>
                         </button>
                         
-                        <button type="button" data-player-toggle aria-label="Play" disabled class="w-11 h-11 bg-white hover:bg-slate-200 text-black rounded-full flex items-center justify-center shadow-lg shadow-white/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100">
-                            <iconify-icon icon="lucide:play" class="text-xl ml-0.5"></iconify-icon>
+                        <button type="button" data-player-toggle aria-label="Play" disabled class="w-10 h-10 md:w-11 md:h-11 bg-white hover:bg-slate-200 text-black rounded-full flex items-center justify-center shadow-lg shadow-white/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100">
+                            <iconify-icon icon="lucide:play" class="text-lg md:text-xl ml-0.5"></iconify-icon>
                         </button>
                         
                         <button type="button" data-player-next aria-label="Next track" disabled class="text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors p-1">
@@ -159,7 +170,7 @@
                         </button>
                     </div>
 
-                    <div class="w-full flex items-center gap-3">
+                    <div class="w-full hidden md:flex items-center gap-3">
                         <span data-player-current-time class="text-[11px] font-bold text-slate-500 w-8 text-right font-mono">0:00</span>
                         <div class="flex-1 relative flex items-center">
                             <input type="range" min="0" max="1000" value="0" data-player-seek aria-label="Seek through current track" disabled class="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:h-1.5 transition-all disabled:opacity-40">
@@ -167,11 +178,11 @@
                         <span data-player-duration class="text-[11px] font-bold text-slate-500 w-8 font-mono">0:00</span>
                     </div>
                     
-                    <p data-player-status role="status" aria-live="polite" class="text-[10px] text-slate-500 truncate max-w-sm hidden md:block">Ready — choose any track to start playback.</p>
+                    <p data-player-status role="status" aria-live="polite" class="text-[10px] text-slate-500 truncate max-w-sm hidden lg:block">Ready — choose any track to start playback.</p>
                 </div>
 
-                <!-- Right: Volume & Utilities -->
-                <div class="flex items-center justify-end gap-4 w-72 shrink-0" role="group" aria-label="Volume controls">
+                <!-- Right: Volume & Utilities (Desktop only) -->
+                <div class="hidden md:flex items-center justify-end gap-4 w-72 shrink-0" role="group" aria-label="Volume controls">
                     <button type="button" data-player-mute aria-label="Mute" disabled class="text-slate-400 hover:text-white disabled:opacity-30 transition-colors p-1">
                         <iconify-icon icon="lucide:volume-2" class="text-lg"></iconify-icon>
                     </button>
@@ -200,14 +211,14 @@
             if (!box) {
                 box = document.createElement('div');
                 box.id = 'toast-container';
-                box.className = 'fixed top-6 right-6 md:bottom-28 md:right-8 z-[9999] flex flex-col gap-2.5 pointer-events-none select-none';
+                box.className = 'fixed top-4 left-4 right-4 sm:left-auto sm:right-6 md:bottom-28 md:top-auto md:right-8 z-[9999] flex flex-col gap-2.5 pointer-events-none select-none';
                 document.body.appendChild(box);
             }
             const el = document.createElement('div');
             el.className = 'pointer-events-auto bg-[#181a22] text-white border border-white/10 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5 text-xs font-semibold transform transition-all duration-300 translate-y-3 opacity-0 backdrop-blur-xl';
             el.innerHTML = `
                 <div class="w-8 h-8 rounded-xl ${isFav ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-white/10 text-slate-400 border border-white/10'} flex items-center justify-center shrink-0 shadow-lg">
-                    <iconify-icon icon="lucide:heart" class="text-base ${isFav ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}"></iconify-icon>
+                    ${isFav ? '<svg class="w-4 h-4 text-rose-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' : '<svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}
                 </div>
                 <div class="flex flex-col">
                     <span class="text-white font-bold text-xs">${msg}</span>
@@ -253,10 +264,11 @@
                 const isFav = Boolean(data.is_favourited);
                 act.value = isFav ? 'remove' : 'add';
                 btn.setAttribute('aria-pressed', String(isFav));
+                btn.setAttribute('aria-label', isFav ? 'Remove from favourites' : 'Add to favourites');
                 btn.title = isFav ? 'Remove from favourites' : 'Add to favourites';
 
-                const filledHeart = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="sr-only">♥ Remove from favourites</span>';
-                const outlineHeart = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span class="sr-only">♡ Add to favourites</span>';
+                const filledHeart = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+                const outlineHeart = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
 
                 if (isFav) {
                     btn.className = 'p-2 rounded-xl text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all focus:outline-none';
@@ -292,6 +304,38 @@
                 form.removeAttribute('aria-busy');
             }
         }, true);
+            } finally {
+                btn.disabled = false;
+                form.removeAttribute('aria-busy');
+            }
+        }, true);
+        // Mobile Drawer Controller
+        const appSidebar = document.getElementById('app-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const closeBtn = document.getElementById('sidebar-close-btn');
+
+        const openDrawer = () => {
+            if (appSidebar) appSidebar.classList.remove('-translate-x-full');
+            if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+        };
+
+        const closeDrawer = () => {
+            if (appSidebar) appSidebar.classList.add('-translate-x-full');
+            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+        };
+
+        if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeDrawer);
+
+        if (appSidebar) {
+            appSidebar.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) closeDrawer();
+                });
+            });
+        }
     })();
     </script>
 </body>

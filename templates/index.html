@@ -3,10 +3,10 @@
 {% block title %}Groovy — Home Discovery{% endblock %}
 
 {% block content %}
-<div class="px-8 md:px-12 py-8 max-w-[1600px] mx-auto">
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-8 max-w-[1600px] mx-auto">
   
   <!-- Hero Banner (Groovy Draft 5a7c7e0f) -->
-  <section class="relative h-[360px] md:h-[400px] w-full rounded-3xl overflow-hidden mb-12 group shadow-2xl">
+  <section class="relative min-h-[320px] md:h-[400px] w-full rounded-3xl overflow-hidden mb-8 md:mb-12 group shadow-2xl flex flex-col justify-center">
     <!-- Background Artwork / Gradient -->
     {% if hero_song.cover_image_url %}
       <img src="{{ hero_song.cover_image_url }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="{{ hero_song.title }}" onerror="this.src='https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1600';">
@@ -14,25 +14,25 @@
       <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1600" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Featured Artist">
     {% endif %}
     
-    <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/70 to-transparent flex flex-col justify-center px-8 md:px-16" data-player-queue>
-      <div class="flex items-center gap-2 mb-3">
+    <div class="relative z-10 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/80 md:via-[#0a0a0c]/70 to-transparent flex flex-col justify-center px-6 sm:px-8 md:px-16 py-8 h-full" data-player-queue>
+      <div class="flex items-center gap-2 mb-2 sm:mb-3">
         <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-        <p class="text-indigo-400 text-xs font-extrabold tracking-[0.25em] uppercase">FEATURED TRACK OF THE DAY</p>
+        <p class="text-indigo-400 text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase">FEATURED TRACK OF THE DAY</p>
       </div>
 
-      <h1 class="text-4xl md:text-6xl font-black mb-3 tracking-tight text-white line-clamp-1">
+      <h1 class="text-2xl sm:text-4xl md:text-6xl font-black mb-2 sm:mb-3 tracking-tight text-white line-clamp-2 md:line-clamp-1">
         {{ hero_song.title }}
       </h1>
       
-      <div class="flex items-center gap-3 mb-8 text-sm">
-        <span class="text-xl md:text-2xl text-slate-300 font-semibold">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-6 md:mb-8 text-xs sm:text-sm">
+        <span class="text-base sm:text-xl md:text-2xl text-slate-300 font-semibold">
           {{ hero_song.artists.all|join:", "|default:"Featured Artist" }}
         </span>
         <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
         <span class="text-slate-400 font-medium">{{ hero_song.formatted_duration }}</span>
         {% if hero_song.album_name %}
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-          <span class="text-slate-400 font-medium flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-500 hidden sm:inline"></span>
+          <span class="text-slate-400 font-medium hidden sm:flex items-center gap-1.5">
             <iconify-icon icon="lucide:disc" class="text-xs text-indigo-400"></iconify-icon>
             {{ hero_song.album_name }}
           </span>
@@ -40,7 +40,7 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-3 sm:gap-4">
         {% if hero_song %}
           {% with audio_url=hero_song.audio_url %}
             {% if audio_url %}
@@ -51,13 +51,13 @@
                       data-track-artist="{{ hero_song.artists.all|join:', ' }}"
                       data-track-album="{{ hero_song.album_name }}"
                       data-track-cover="{{ hero_song.cover_image_url }}"
-                      class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-full font-bold flex items-center gap-3 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
-                <iconify-icon icon="lucide:play" class="text-xl"></iconify-icon>
+                      class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+                <iconify-icon icon="lucide:play" class="text-lg sm:text-xl"></iconify-icon>
                 <span>Listen Now</span>
               </button>
             {% else %}
-              <a href="{% url 'song_detail' hero_song.id %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-full font-bold flex items-center gap-3 shadow-lg shadow-indigo-600/30 transition-all">
-                <iconify-icon icon="lucide:disc" class="text-xl"></iconify-icon>
+              <a href="{% url 'song_detail' hero_song.id %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all">
+                <iconify-icon icon="lucide:disc" class="text-lg sm:text-xl"></iconify-icon>
                 <span>View Track Details</span>
               </a>
             {% endif %}
@@ -71,8 +71,8 @@
             {% endif %}
           {% endif %}
         {% else %}
-          <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-full font-bold flex items-center gap-3 shadow-lg shadow-indigo-600/30 transition-all">
-            <iconify-icon icon="lucide:compass" class="text-xl"></iconify-icon>
+          <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all">
+            <iconify-icon icon="lucide:compass" class="text-lg sm:text-xl"></iconify-icon>
             <span>Explore Catalogue</span>
           </a>
         {% endif %}
@@ -81,7 +81,7 @@
   </section>
 
   <!-- 3-Column Groovy Content Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
     
     <!-- Left 2 Columns: Artists, Charts & Curated Tracks -->
     <div class="lg:col-span-2 space-y-12">

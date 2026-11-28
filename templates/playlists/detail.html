@@ -3,10 +3,10 @@
 {% block title %}{{ playlist.title }} — Groovy Playlists{% endblock %}
 
 {% block content %}
-<div class="px-8 md:px-12 py-8 max-w-[1600px] mx-auto">
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-8 max-w-[1600px] mx-auto">
 
   <!-- Playlist Header Banner (Groovy Draft a8e076cc) -->
-  <section class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-12 mb-10 shadow-2xl relative overflow-hidden">
+  <section class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 md:p-12 mb-8 md:mb-10 shadow-2xl relative overflow-hidden">
     <div class="flex flex-col md:flex-row items-center md:items-end gap-8 relative z-10">
       
       <!-- Artwork -->
@@ -44,13 +44,13 @@
           {% if playable_count %}
             <button type="button" data-player-play-all class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer">
               <iconify-icon icon="lucide:play" class="text-base"></iconify-icon>
-              <span>Play All ({{ playable_count }})</span>
+              <span>Play All ({{ playable_count }} playable)</span>
             </button>
-          {% else %}
-            <button type="button" disabled class="bg-white/5 text-slate-500 font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 cursor-not-allowed border border-white/5 opacity-50">
-              <iconify-icon icon="lucide:play" class="text-base"></iconify-icon>
-              <span>No Audio Samples</span>
-            </button>
+          {% elif tracks %}
+            <span class="text-xs text-slate-400 font-semibold px-4 py-2.5 rounded-full bg-white/5 border border-white/5 flex items-center gap-2">
+              <iconify-icon icon="lucide:volume-x" class="text-slate-500"></iconify-icon>
+              <span>This playlist has no available audio samples to play.</span>
+            </span>
           {% endif %}
 
           <a href="{% url 'playlist_update' playlist.id %}" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs px-5 py-3 rounded-full flex items-center gap-2 transition-colors">
@@ -72,20 +72,20 @@
   <div class="space-y-4" data-player-queue aria-label="Playlist playback queue">
     <p class="text-[11px] text-slate-400 font-medium" data-playlist-page-feedback role="status" aria-live="polite"></p>
 
-    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl" data-playlist-track-list>
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-4 sm:p-6 shadow-xl" data-playlist-track-list>
       
       <!-- Table Header -->
-      <div class="grid grid-cols-12 gap-4 pb-4 mb-3 border-b border-white/5 text-[11px] font-extrabold uppercase tracking-widest text-slate-500 px-3">
+      <div class="grid grid-cols-12 gap-2 sm:gap-4 pb-4 mb-3 border-b border-white/5 text-[11px] font-extrabold uppercase tracking-widest text-slate-500 px-2 sm:px-3">
         <span class="col-span-1 text-center">#</span>
-        <span class="col-span-5">Title &amp; Artist</span>
+        <span class="col-span-8 sm:col-span-5">Title &amp; Artist</span>
         <span class="col-span-3 hidden md:block">Album</span>
         <span class="col-span-1 text-right hidden sm:block">Time</span>
-        <span class="col-span-2 text-right">Actions</span>
+        <span class="col-span-3 sm:col-span-2 text-right">Actions</span>
       </div>
 
       <!-- Tracks Rows -->
       {% for track in tracks %}
-        <div class="grid grid-cols-12 gap-4 items-center p-3 rounded-2xl hover:bg-white/5 transition-all group" data-playlist-track data-song-id="{{ track.song_id }}">
+        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center p-2.5 sm:p-3 rounded-2xl hover:bg-white/5 transition-all group" data-playlist-track data-song-id="{{ track.song_id }}">
           
           <!-- Position -->
           <span class="col-span-1 text-center text-xs font-black text-slate-500 group-hover:text-indigo-400 font-mono" data-track-position>
@@ -93,7 +93,7 @@
           </span>
 
           <!-- Title & Artist -->
-          <div class="col-span-5 flex items-center gap-3.5 min-w-0">
+          <div class="col-span-8 sm:col-span-5 flex items-center gap-3 sm:gap-3.5 min-w-0">
             <div class="w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0 flex items-center justify-center">
               {% if track.song.cover_image_url %}
                 <img src="{{ track.song.cover_image_url }}" alt="{{ track.song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
@@ -110,6 +110,7 @@
                 {% empty %}
                   Unknown Artist
                 {% endfor %}
+                <span class="sr-only">{% for g in track.song.genres.all %}{{ g.name }} {% endfor %}</span>
               </p>
             </div>
           </div>
@@ -127,7 +128,7 @@
           </div>
 
           <!-- Actions -->
-          <div class="col-span-2 flex items-center justify-end gap-2">
+          <div class="col-span-3 sm:col-span-2 flex items-center justify-end gap-1.5 sm:gap-2">
             {% with audio_url=track.song.audio_url %}
               {% if audio_url %}
                 <button type="button"
@@ -144,7 +145,7 @@
               {% else %}
                 <span class="text-[10px] text-slate-500 font-medium px-2 py-0.5 rounded-md bg-white/5 border border-white/5 flex items-center gap-1 select-none" title="No audio sample attached">
                   <iconify-icon icon="lucide:volume-x" class="text-xs text-slate-500"></iconify-icon>
-                  <span>No Audio</span>
+                  <span>No Audio<span class="sr-only">Audio sample not available</span></span>
                 </span>
               {% endif %}
             {% endwith %}
@@ -178,7 +179,7 @@
       {% empty %}
         <div class="p-12 text-center" data-playlist-empty>
           <iconify-icon icon="lucide:music" class="text-4xl text-slate-600 mb-2"></iconify-icon>
-          <p class="text-sm font-bold text-white">This playlist has no songs yet</p>
+          <p class="text-sm font-bold text-white">This playlist is empty</p>
           <p class="text-xs text-slate-500 mt-1">Browse the catalogue to add your favourite music tracks.</p>
           <a href="{% url 'catalogue_browse' %}" class="inline-block mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-2.5 rounded-full transition-all">
             Browse Music

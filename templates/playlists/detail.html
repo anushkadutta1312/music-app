@@ -40,11 +40,16 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3" data-player-queue>
+        <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
           {% if playable_count %}
-            <button type="button" data-player-play-all class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+            <button type="button" data-player-play-all class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer">
               <iconify-icon icon="lucide:play" class="text-base"></iconify-icon>
               <span>Play All ({{ playable_count }})</span>
+            </button>
+          {% else %}
+            <button type="button" disabled class="bg-white/5 text-slate-500 font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 cursor-not-allowed border border-white/5 opacity-50">
+              <iconify-icon icon="lucide:play" class="text-base"></iconify-icon>
+              <span>No Audio Samples</span>
             </button>
           {% endif %}
 
@@ -132,10 +137,15 @@
                         data-track-artist="{{ track.song.artists.all|join:', ' }}"
                         data-track-album="{{ track.song.album_name }}"
                         data-track-cover="{{ track.song.cover_image_url }}"
-                        class="text-indigo-400 hover:text-white p-1 hover:scale-110 transition-transform"
+                        class="text-indigo-400 hover:text-white p-1 hover:scale-110 transition-transform cursor-pointer"
                         title="Play {{ track.song.title }}">
                   <iconify-icon icon="lucide:play-circle" class="text-xl"></iconify-icon>
                 </button>
+              {% else %}
+                <span class="text-[10px] text-slate-500 font-medium px-2 py-0.5 rounded-md bg-white/5 border border-white/5 flex items-center gap-1 select-none" title="No audio sample attached">
+                  <iconify-icon icon="lucide:volume-x" class="text-xs text-slate-500"></iconify-icon>
+                  <span>No Audio</span>
+                </span>
               {% endif %}
             {% endwith %}
 

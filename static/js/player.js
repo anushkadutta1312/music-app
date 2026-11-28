@@ -112,16 +112,20 @@
     }
 
     function readQueue(container) {
-        const queueScope = container || document;
-        return Array.from(queueScope.querySelectorAll('[data-player-track]'))
+        let queueScope = container || document;
+        let buttons = Array.from(queueScope.querySelectorAll('[data-player-track]'));
+        if (!buttons.length) {
+            buttons = Array.from(document.querySelectorAll('[data-player-track]'));
+        }
+        return buttons
             .map((button) => ({
-                src: button.dataset.audioUrl,
+                src: (button.dataset.audioUrl || '').trim(),
                 title: button.dataset.trackTitle || 'Untitled track',
                 artist: button.dataset.trackArtist || 'Unknown artist',
                 album: button.dataset.trackAlbum || '',
                 cover: button.dataset.trackCover || '',
             }))
-            .filter((track) => track.src);
+            .filter((track) => Boolean(track.src));
     }
 
     function updateArtwork(url) {
@@ -178,15 +182,30 @@
     function startFrom(container, clickedButton, playAll) {
         queue = readQueue(container);
         if (!queue.length) {
-            setStatus('There are no available audio files in this queue.', 'unavailable');
+            queue = readQueue(document);
+        }
+
+        if (!queue.length) {
+            setStatus('There are no available audio files in this playlist.', 'unavailable');
             currentIndex = -1;
             updateNavigation();
             return;
         }
-        currentIndex = playAll
-            ? 0
-            : queue.findIndex((track) => track.src === clickedButton.dataset.audioUrl);
-        if (currentIndex < 0) {
+
+        if (playAll) {
+            // Find the first track with audio available
+            currentIndex = queue.findIndex(track => Boolean(track.src));
+            if (currentIndex < 0) currentIndex = 0;
+        } else if (clickedButton) {
+            const target = (clickedButton.dataset.audioUrl || '').trim();
+            currentIndex = queue.findIndex((track) => track.src === target);
+            if (currentIndex < 0) {
+                queue = readQueue(document);
+                currentIndex = queue.findIndex((track) => track.src === target);
+            }
+        }
+
+        if (currentIndex < 0 || currentIndex >= queue.length) {
             setStatus('This audio file is unavailable. Choose another track.', 'unavailable');
             updateNavigation();
             return;
@@ -198,8 +217,8 @@
     document.addEventListener('click', (event) => {
         const playAllButton = event.target.closest('[data-player-play-all]');
         if (playAllButton) {
-            const container = playAllButton.closest('[data-player-queue]') || document;
-            startFrom(container, null, true);
+            // Find all playable tracks on page
+            startFrom(document, null, true);
             return;
         }
 
@@ -375,8 +394,13 @@
     });
     audio.addEventListener('error', () => {
         if (controls.seek) controls.seek.disabled = true;
-        setStatus('This audio file is unavailable or could not be loaded.', 'error');
-        updatePlayStateUI(false);
+        setStatus('Audio sample could not be loaded. Skipping to next playable track…', 'error');
+        if (currentIndex >= 0 && currentIndex < queue.length - 1) {
+            currentIndex += 1;
+            setTimeout(() => playCurrentTrack(true), 500);
+        } else {
+            updatePlayStateUI(false);
+        }
     });
 
     if (controls.volume) audio.volume = Number(controls.volume.value);

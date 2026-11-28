@@ -48,32 +48,14 @@
       {% endif %}
     </div>
 
-    <!-- 6 Vivid Gradient Genre Cards with Angled Icons -->
+    <!-- 6 Vivid Gradient Genre Cards with Real Database IDs -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-      <a href="{% url 'catalogue_browse' %}?genre=4" class="h-28 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-700 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">Electronic</span>
-        <iconify-icon icon="lucide:cpu" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
-      <a href="{% url 'catalogue_browse' %}?genre=8" class="h-28 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-700 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">Pop</span>
-        <iconify-icon icon="lucide:star" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
-      <a href="{% url 'catalogue_browse' %}?genre=5" class="h-28 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-700 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">Hip-Hop</span>
-        <iconify-icon icon="lucide:mic" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
-      <a href="{% url 'catalogue_browse' %}?genre=10" class="h-28 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">Rock</span>
-        <iconify-icon icon="lucide:guitar" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
-      <a href="{% url 'catalogue_browse' %}?genre=7" class="h-28 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-800 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">Jazz</span>
-        <iconify-icon icon="lucide:music" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
-      <a href="{% url 'catalogue_browse' %}?genre=9" class="h-28 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-700 p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none">
-        <span class="text-base font-black text-white relative z-10 block">R&amp;B</span>
-        <iconify-icon icon="lucide:heart" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
-      </a>
+      {% for genre in genres|slice:":6" %}
+        <a href="{% url 'catalogue_browse' %}?genre={{ genre.id }}" class="h-28 rounded-2xl {% cycle 'bg-gradient-to-br from-indigo-500 to-blue-700' 'bg-gradient-to-br from-rose-500 to-purple-700' 'bg-gradient-to-br from-amber-500 to-orange-700' 'bg-gradient-to-br from-emerald-500 to-teal-700' 'bg-gradient-to-br from-cyan-500 to-blue-800' 'bg-gradient-to-br from-fuchsia-500 to-pink-700' %} p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none {% if selected_genre_id == genre.id|stringformat:'s' %}ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0c]{% endif %}">
+          <span class="text-base font-black text-white relative z-10 block">{{ genre.name }}</span>
+          <iconify-icon icon="{% cycle 'lucide:disc' 'lucide:star' 'lucide:mic' 'lucide:guitar' 'lucide:music' 'lucide:headphones' %}" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
+        </a>
+      {% endfor %}
     </div>
   </section>
 
@@ -92,7 +74,7 @@
       <!-- Genre Select -->
       <div>
         <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Genre</label>
-        <select name="genre" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors">
+        <select name="genre" onchange="this.form.submit()" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
           <option value="">All Genres</option>
           {% for genre in genres %}
             <option value="{{ genre.id }}" {% if selected_genre_id == genre.id|stringformat:"s" %}selected{% endif %}>{{ genre.name }}</option>
@@ -103,7 +85,7 @@
       <!-- Artist Select -->
       <div>
         <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Artist</label>
-        <select name="artist" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors">
+        <select name="artist" onchange="this.form.submit()" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
           <option value="">All Artists</option>
           {% for artist in artists %}
             <option value="{{ artist.id }}" {% if selected_artist_id == artist.id|stringformat:"s" %}selected{% endif %}>{{ artist.name }}</option>

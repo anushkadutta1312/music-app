@@ -1,98 +1,505 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Music App{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}Groovy — Modern Music Player{% endblock %}</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS & Iconify -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              groovy: {
+                deep: '#0a0a0c',
+                sidebar: '#0f0f12',
+                card: '#141417',
+                blue: '#5865f2',
+                purple: '#9d4edd',
+              }
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg-deep: #0a0a0c;
+        --bg-card: #141417;
+        --accent-blue: #5865f2;
+        --accent-purple: #9d4edd;
+        --text-muted: #94a3b8;
+      }
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg-deep);
+        color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #252830;
+        border-radius: 10px;
+      }
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border-width: 0 !important;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #3b4252;
+      }
+      .glass-panel {
+        background: rgba(20, 20, 23, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .album-glow {
+        box-shadow: 0 0 60px 10px rgba(88, 101, 242, 0.25), 0 0 100px 30px rgba(157, 78, 221, 0.15);
+      }
+      /* Custom seek range with dynamic progress fill */
+      input[type="range"][data-player-seek] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 9999px;
+      }
+      input[type="range"][data-player-seek]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+        cursor: pointer;
+        transition: transform 0.1s ease;
+      }
+      input[type="range"][data-player-seek]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-brand">
-            <a href="{% url 'home' %}">
-                🎵 <span>Music App</span>
-            </a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}">Home</a></li>
+<body class="bg-[#0a0a0c] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
 
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                <li><a href="{% url 'catalogue_browse' %}">Browse Music</a></li>
-                <li><a href="{% url 'my_favourites' %}">My Favourites</a></li>
-                <li><a href="{% url 'playlist_list' %}">My Playlists</a></li>
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/75 z-40 backdrop-blur-sm hidden lg:hidden transition-opacity duration-300" onclick="window.closeMobileDrawer && window.closeMobileDrawer()"></div>
 
-                {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
-                    <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
-                    <li><a href="{% url 'catalogue_manage' %}">Catalogue Management</a></li>
-                {% endif %}
+    <!-- Main Application Shell -->
+    <div class="flex h-screen w-full bg-[#0a0a0c] overflow-hidden">
+        
+        <!-- Left Sidebar -->
+        {% include '_sidebar.html' %}
 
-                <li><a href="{% url 'profile' %}">My Profile</a></li>
-                <li>
-                    <form method="POST" action="{% url 'logout' %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-btn nav-btn-outline" style="cursor:pointer;">Logout ({{ user.username }})</button>
-                    </form>
-                </li>
-            {% else %}
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="{% url 'register' %}" class="nav-btn nav-btn-primary">Register</a></li>
+        <!-- Center Main Content -->
+        <main class="flex-1 flex flex-col min-w-0 bg-[#0a0a0c] overflow-y-auto custom-scrollbar relative" id="main-content-scroll">
+            
+            <!-- Sticky Top Header -->
+            {% include '_topheader.html' %}
+
+            <!-- System Messages / Alerts -->
+            {% if messages %}
+                <div class="px-10 pt-4">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-2xl mb-3 text-sm flex items-center justify-between border {% if message.tags == 'success' %}bg-emerald-500/10 text-emerald-300 border-emerald-500/20{% elif message.tags == 'error' %}bg-rose-500/10 text-rose-300 border-rose-500/20{% else %}bg-indigo-500/10 text-indigo-300 border-indigo-500/20{% endif %}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
-        </ul>
-    </nav>
 
-    <div class="main-content">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            <!-- Main Page Content Slot -->
+            <div class="flex-1 pb-32">
+                {% block content %}{% endblock %}
             </div>
-        {% endif %}
 
-        {% block content %}{% endblock %}
+            <!-- Persistent Bottom Audio Player Bar (Groovy Design) -->
+            <section class="fixed bottom-0 left-0 right-0 h-20 md:h-24 bg-[#101014]/95 backdrop-blur-xl border-t border-white/5 px-4 md:px-8 flex items-center justify-between z-50 shadow-2xl transition-all" data-site-player data-player-state="idle" aria-label="Music player">
+                <audio data-audio-player preload="none" playsinline aria-label="Selected music sample"></audio>
+                
+                <!-- Left: Current Track Details (Tap to Open Full-Screen Player) -->
+                <div class="flex items-center gap-3 md:gap-4 flex-1 md:flex-initial md:w-72 shrink-0 min-w-0 mr-2 md:mr-0 cursor-pointer group" data-open-fullscreen-player title="Open full-screen player">
+                    <div class="w-11 h-11 md:w-14 md:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/5 relative shrink-0 flex items-center justify-center shadow-md group-hover:border-indigo-500/50 transition-colors">
+                        <img data-player-artwork alt="" class="w-full h-full object-cover" hidden>
+                        <iconify-icon data-player-artwork-fallback icon="lucide:disc" class="text-indigo-400 text-xl md:text-2xl"></iconify-icon>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <strong data-player-title class="block text-xs md:text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">Choose a song to play</strong>
+                        <span data-player-artist class="block text-[11px] md:text-xs text-slate-400 truncate mt-0.5">Groovy collection</span>
+                    </div>
+                </div>
+
+                <!-- Center: Main Playback & Seek Controls -->
+                <div class="flex flex-col items-center gap-1.5 md:max-w-xl md:w-full md:px-6 shrink-0 md:shrink">
+                    <div class="flex items-center gap-3 sm:gap-6" role="group" aria-label="Playback controls">
+                        <button type="button" data-player-previous aria-label="Previous track" disabled class="hidden sm:inline-block text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors p-1">
+                            <iconify-icon icon="lucide:skip-back" class="text-lg"></iconify-icon>
+                        </button>
+                        
+                        <button type="button" data-player-toggle aria-label="Play" disabled class="w-10 h-10 md:w-11 md:h-11 bg-white hover:bg-slate-200 text-black rounded-full flex items-center justify-center shadow-lg shadow-white/10 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100">
+                            <iconify-icon icon="lucide:play" class="text-lg md:text-xl ml-0.5"></iconify-icon>
+                        </button>
+                        
+                        <button type="button" data-player-next aria-label="Next track" disabled class="text-slate-400 hover:text-white disabled:opacity-30 disabled:hover:text-slate-400 transition-colors p-1">
+                            <iconify-icon icon="lucide:skip-forward" class="text-lg"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <div class="w-full hidden md:flex items-center gap-3">
+                        <span data-player-current-time class="text-[11px] font-bold text-slate-500 w-8 text-right font-mono">0:00</span>
+                        <div class="flex-1 relative flex items-center">
+                            <input type="range" min="0" max="1000" value="0" data-player-seek aria-label="Seek through current track" disabled class="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:h-1.5 transition-all disabled:opacity-40">
+                        </div>
+                        <span data-player-duration class="text-[11px] font-bold text-slate-500 w-8 font-mono">0:00</span>
+                    </div>
+                    
+                    <p data-player-status role="status" aria-live="polite" class="text-[10px] text-slate-500 truncate max-w-sm hidden lg:block">Ready — choose any track to start playback.</p>
+                </div>
+
+                <!-- Right: Volume & Utilities (Desktop only) -->
+                <div class="hidden md:flex items-center justify-end gap-3.5 w-72 shrink-0" role="group" aria-label="Volume controls">
+                    <button type="button" data-player-mute aria-label="Mute" disabled class="text-slate-400 hover:text-white disabled:opacity-30 transition-colors p-1">
+                        <iconify-icon icon="lucide:volume-2" class="text-lg"></iconify-icon>
+                    </button>
+                    <input type="range" min="0" max="1" step="0.01" value="0.8" data-player-volume aria-label="Volume" disabled class="w-20 h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-500 transition-all disabled:opacity-40">
+                    <button type="button" data-open-fullscreen-player aria-label="Open fullscreen player" class="text-slate-400 hover:text-white p-1 transition-colors cursor-pointer" title="Full screen now playing">
+                        <iconify-icon icon="lucide:maximize-2" class="text-base"></iconify-icon>
+                    </button>
+                    <a href="/media/audio/ATTRIBUTION.md" target="_blank" rel="noopener" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-400 transition-colors ml-1">Credits</a>
+                </div>
+            </section>
+
+            <!-- Full-Screen Now Playing Player (Spotify-Style Slide-Up Modal) -->
+            <div id="fullscreen-player-modal"
+                 class="fixed inset-0 z-[100] bg-gradient-to-b from-[#181a24] via-[#0d0e12] to-[#070709] text-white flex flex-col justify-between p-6 sm:p-8 md:p-10 lg:p-12 transform translate-y-full transition-transform duration-300 ease-out select-none overflow-y-auto"
+                 aria-modal="true"
+                 role="dialog"
+                 aria-label="Now playing fullscreen player">
+              
+              <!-- Top Bar: Dismiss Chevron + Header Title + Close / Minimize -->
+              <div class="w-full max-w-6xl mx-auto flex items-center justify-between shrink-0 pt-2 pb-2">
+                <button type="button"
+                        id="close-fullscreen-player-btn"
+                        class="px-3 py-2 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center gap-2 text-slate-300 hover:text-white transition-all cursor-pointer border border-white/5"
+                        aria-label="Dismiss fullscreen player">
+                  <iconify-icon icon="lucide:chevron-down" class="text-2xl pointer-events-none"></iconify-icon>
+                  <span class="hidden sm:inline text-xs font-semibold tracking-wide text-slate-400">Minimize (Esc)</span>
+                </button>
+                
+                <div class="text-center min-w-0 px-4">
+                  <p class="text-[10px] md:text-xs font-extrabold uppercase tracking-[0.2em] text-indigo-400">PLAYING FROM COLLECTION</p>
+                  <p data-fs-album class="text-xs md:text-sm font-bold text-slate-300 truncate mt-0.5">Groovy Music Player</p>
+                </div>
+
+                <div class="w-10 h-10 md:w-auto md:px-3 md:py-1.5 md:rounded-full md:bg-white/5 md:border md:border-white/5 flex items-center justify-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                  <span class="hidden md:inline text-xs font-medium text-slate-400">Live</span>
+                </div>
+              </div>
+
+              <!-- Main Showcase Container:
+                   Mobile (< md): vertically stacked (Art in middle, Info & Controls at bottom)
+                   Desktop (>= md): side-by-side 2-column centered showcase (Art on left, Info & Controls on right) -->
+              <div class="flex-1 flex flex-col md:flex-row items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-20 w-full max-w-5xl mx-auto my-auto min-h-0 py-4 md:py-8">
+
+                <!-- Artwork Section -->
+                <div class="shrink-0 flex items-center justify-center w-full md:w-auto">
+                  <div class="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-[440px] aspect-square rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_80px_rgba(88,101,242,0.22)] border border-white/10 bg-[#121318] group">
+                    <img data-fs-artwork alt="" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" hidden>
+                    <div data-fs-artwork-fallback class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-950/60 via-purple-950/40 to-slate-950">
+                      <iconify-icon icon="lucide:disc" class="text-7xl md:text-8xl text-indigo-400 animate-[spin_12s_linear_infinite]"></iconify-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Controls & Info Section -->
+                <div class="w-full max-w-md md:max-w-lg shrink-0 flex flex-col justify-center space-y-5 md:space-y-7">
+                  
+                  <!-- Title & Artist -->
+                  <div class="text-center md:text-left">
+                    <h2 data-fs-title class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white truncate tracking-tight">Choose a song to play</h2>
+                    <p data-fs-artist class="text-sm sm:text-base md:text-lg font-semibold text-slate-400 truncate mt-1 md:mt-2">Groovy collection</p>
+                  </div>
+
+                  <!-- Seekbar & Time Display -->
+                  <div class="space-y-2">
+                    <div class="relative flex items-center">
+                      <input type="range"
+                             min="0"
+                             max="1000"
+                             value="0"
+                             data-fs-seek
+                             aria-label="Seek track"
+                             disabled
+                             class="w-full h-1.5 md:h-2 bg-white/15 rounded-full appearance-none cursor-pointer accent-indigo-500 hover:h-2.5 transition-all disabled:opacity-40">
+                    </div>
+                    <div class="flex items-center justify-between text-xs md:text-sm font-mono font-bold text-slate-400">
+                      <span data-fs-current-time>0:00</span>
+                      <span data-fs-duration>0:00</span>
+                    </div>
+                  </div>
+
+                  <!-- Main Playback Controls (Shuffle, Prev, Play/Pause, Next, Repeat) -->
+                  <div class="flex items-center justify-between md:justify-start md:gap-7 px-2 md:px-0">
+                    <button type="button"
+                            data-fs-shuffle
+                            class="text-slate-400 hover:text-white transition-colors p-2 text-xl md:text-2xl cursor-pointer"
+                            title="Shuffle">
+                      <iconify-icon icon="lucide:shuffle"></iconify-icon>
+                    </button>
+
+                    <button type="button"
+                            data-fs-previous
+                            disabled
+                            class="text-white hover:text-indigo-400 disabled:opacity-30 transition-colors p-2 text-2xl md:text-3xl active:scale-90 cursor-pointer"
+                            title="Previous">
+                      <iconify-icon icon="lucide:skip-back"></iconify-icon>
+                    </button>
+
+                    <button type="button"
+                            data-fs-toggle
+                            disabled
+                            class="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-full bg-white text-black flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-40 cursor-pointer"
+                            aria-label="Play / Pause">
+                      <iconify-icon icon="lucide:play" class="text-3xl md:text-4xl ml-1 text-black"></iconify-icon>
+                    </button>
+
+                    <button type="button"
+                            data-fs-next
+                            disabled
+                            class="text-white hover:text-indigo-400 disabled:opacity-30 transition-colors p-2 text-2xl md:text-3xl active:scale-90 cursor-pointer"
+                            title="Next">
+                      <iconify-icon icon="lucide:skip-forward"></iconify-icon>
+                    </button>
+
+                    <button type="button"
+                            data-fs-repeat
+                            class="text-slate-400 hover:text-white transition-colors p-2 text-xl md:text-2xl cursor-pointer"
+                            title="Repeat">
+                      <iconify-icon icon="lucide:repeat"></iconify-icon>
+                    </button>
+                  </div>
+
+                  <!-- Bottom Actions: Quality Badge & Browse Queue -->
+                  <div class="flex items-center justify-between pt-2 px-1 text-slate-400 border-t border-white/5">
+                    <div class="flex items-center gap-2 text-xs md:text-sm font-semibold text-emerald-400">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Hi-Fi Stereo</span>
+                    </div>
+                    <a href="{% url 'catalogue_browse' %}"
+                       onclick="window.closeFullScreenPlayer && window.closeFullScreenPlayer()"
+                       class="text-xs md:text-sm font-bold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 text-decoration-none">
+                      <iconify-icon icon="lucide:list-music" class="text-base"></iconify-icon>
+                      <span>Browse All Songs</span>
+                    </a>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Bottom spacer on desktop for clean optical centering -->
+              <div class="shrink-0 h-2 md:h-6"></div>
+
+            </div>
+        </main>
     </div>
 
-    <section class="site-player" data-site-player data-player-state="idle" aria-label="Music player">
-        <audio data-audio-player preload="none" playsinline aria-label="Selected music sample"></audio>
-        <div class="player-current-track">
-            <div class="player-artwork">
-                <img data-player-artwork alt="" hidden>
-                <span data-player-artwork-fallback aria-hidden="true">♫</span>
-            </div>
-            <div class="player-track-copy">
-                <strong data-player-title>Choose a song to play</strong>
-                <span data-player-artist>Music App sample collection</span>
-            </div>
-        </div>
-        <div class="player-main-controls">
-            <div class="player-buttons" role="group" aria-label="Playback controls">
-                <button type="button" data-player-previous aria-label="Previous track" disabled>⏮</button>
-                <button type="button" class="player-play-button" data-player-toggle aria-label="Play" disabled>▶</button>
-                <button type="button" data-player-next aria-label="Next track" disabled>⏭</button>
-            </div>
-            <div class="player-seek-row">
-                <span data-player-current-time>0:00</span>
-                <input type="range" min="0" max="1000" value="0" data-player-seek aria-label="Seek through current track" disabled>
-                <span data-player-duration>0:00</span>
-            </div>
-            <p data-player-status role="status" aria-live="polite">Ready — playback starts only when you choose a track.</p>
-        </div>
-        <div class="player-volume-controls" role="group" aria-label="Volume controls">
-            <button type="button" data-player-mute aria-label="Mute" disabled>🔊</button>
-            <input type="range" min="0" max="1" step="0.01" value="0.8" data-player-volume aria-label="Volume" disabled>
-            <a href="/media/audio/ATTRIBUTION.md" target="_blank" rel="noopener">Audio credits</a>
-        </div>
-    </section>
+    <!-- Core App Scripts with Cache-Busting -->
+    {% load static %}
+    <script src="{% static 'js/playlists.js' %}?v={% now 'U' %}" defer></script>
+    <script src="{% static 'js/player.js' %}?v={% now 'U' %}" defer></script>
 
-    <footer>
-        <p>&copy; 2026 Music App • Full Stack DBMS Academic Project • Powered by Django &amp; SQLite</p>
-    </footer>
-    <script src="{% static 'js/favourites.js' %}" defer></script>
-    <script src="{% static 'js/playlists.js' %}" defer></script>
-    <script src="{% static 'js/player.js' %}" defer></script>
+    <!-- Inlined Favourites Handler (Bypasses all browser disk cache) -->
+    <script>
+    (() => {
+        const getCsrf = () => {
+            const cookie = document.cookie.split('; ').find(i => i.startsWith('csrftoken='));
+            return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : '';
+        };
+
+        const toast = (msg, isFav) => {
+            let box = document.getElementById('toast-container');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'toast-container';
+                box.className = 'fixed top-4 left-4 right-4 sm:left-auto sm:right-6 md:bottom-28 md:top-auto md:right-8 z-[9999] flex flex-col gap-2.5 pointer-events-none select-none';
+                document.body.appendChild(box);
+            }
+            const el = document.createElement('div');
+            el.className = 'pointer-events-auto bg-[#181a22] text-white border border-white/10 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5 text-xs font-semibold transform transition-all duration-300 translate-y-3 opacity-0 backdrop-blur-xl';
+            el.innerHTML = `
+                <div class="w-8 h-8 rounded-xl ${isFav ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-white/10 text-slate-400 border border-white/10'} flex items-center justify-center shrink-0 shadow-lg">
+                    ${isFav ? '<svg class="w-4 h-4 text-rose-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' : '<svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-white font-bold text-xs">${msg}</span>
+                    <span class="text-[10px] text-slate-400 font-normal">${isFav ? 'Saved to Your Favourites' : 'Removed from Your Favourites'}</span>
+                </div>
+            `;
+            box.appendChild(el);
+            requestAnimationFrame(() => {
+                el.classList.remove('translate-y-3', 'opacity-0');
+                el.classList.add('translate-y-0', 'opacity-100');
+            });
+            setTimeout(() => {
+                el.classList.remove('opacity-100');
+                el.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => el.remove(), 350);
+            }, 2400);
+        };
+
+        document.addEventListener('submit', async (e) => {
+            const form = e.target.closest('[data-favourite-form]');
+            if (!form) return;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            const btn = form.querySelector('[data-favourite-button]');
+            const act = form.querySelector('input[name="action"]');
+            if (!btn || !act) return;
+
+            btn.disabled = true;
+            form.setAttribute('aria-busy', 'true');
+
+            try {
+                const res = await fetch(form.getAttribute('action'), {
+                    method: 'POST',
+                    body: new FormData(form),
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json', 'X-CSRFToken': getCsrf() }
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update');
+
+                const isFav = Boolean(data.is_favourited);
+                act.value = isFav ? 'remove' : 'add';
+                btn.setAttribute('aria-pressed', String(isFav));
+                btn.setAttribute('aria-label', isFav ? 'Remove from favourites' : 'Add to favourites');
+                btn.title = isFav ? 'Remove from favourites' : 'Add to favourites';
+
+                const filledHeart = '<svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+                const outlineHeart = '<svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+
+                if (isFav) {
+                    btn.className = 'p-2 rounded-xl text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all focus:outline-none';
+                    btn.innerHTML = filledHeart;
+                } else {
+                    btn.className = 'p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-white/5 transition-all focus:outline-none';
+                    btn.innerHTML = outlineHeart;
+                }
+
+                toast(data.message || (isFav ? 'Song added to favourites' : 'Song removed from favourites'), isFav);
+
+                if (!isFav && form.dataset.removeCardOnUnsave === 'true') {
+                    const card = form.closest('.song-card') || form.closest('.group');
+                    const grid = form.closest('[data-favourites-grid]');
+                    if (card) {
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.remove();
+                            if (grid && !grid.querySelector('[data-favourite-form]')) {
+                                grid.hidden = true;
+                                const emptyState = document.querySelector('[data-favourites-empty]');
+                                if (emptyState) emptyState.hidden = false;
+                            }
+                        }, 300);
+                    }
+                }
+            } catch (err) {
+                toast(err.message || 'Could not update favourites.', false);
+            } finally {
+                btn.disabled = false;
+                form.removeAttribute('aria-busy');
+            }
+        }, true);
+    })();
+
+    // Mobile Drawer Controller (Global handlers for inline + listeners)
+    window.openMobileDrawer = function() {
+        const appSidebar = document.getElementById('app-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        if (appSidebar) {
+            appSidebar.classList.remove('-translate-x-full');
+            appSidebar.classList.add('translate-x-0');
+        }
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+    };
+
+    window.closeMobileDrawer = function() {
+        const appSidebar = document.getElementById('app-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        if (appSidebar) {
+            appSidebar.classList.remove('translate-x-0');
+            appSidebar.classList.add('-translate-x-full');
+        }
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+    };
+
+    window.toggleMobileDrawer = function() {
+        const appSidebar = document.getElementById('app-sidebar');
+        if (appSidebar && appSidebar.classList.contains('-translate-x-full')) {
+            window.openMobileDrawer();
+        } else {
+            window.closeMobileDrawer();
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const closeBtn = document.getElementById('sidebar-close-btn');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const appSidebar = document.getElementById('app-sidebar');
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', window.openMobileDrawer);
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', window.closeMobileDrawer);
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', window.closeMobileDrawer);
+        }
+
+        if (appSidebar) {
+            appSidebar.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) window.closeMobileDrawer();
+                });
+            });
+        }
+    });
+    </script>
 </body>
 </html>

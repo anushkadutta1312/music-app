@@ -1,70 +1,194 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ playlist.title }} — Music App{% endblock %}
+{% block title %}{{ playlist.title }} — Groovy Playlists{% endblock %}
 
 {% block content %}
-<div class="playlist-page-header">
-    <div>
-        <p><a href="{% url 'playlist_list' %}">My Playlists</a> /</p>
-        <h1>{{ playlist.title }}</h1>
-        <p>{{ playlist.description|default:"No description for this playlist." }}</p>
-        <p><strong data-playlist-song-count>{{ song_count }}</strong> song{{ song_count|pluralize }}</p>
-    </div>
-    <div class="playlist-card-actions">
-        <a href="{% url 'playlist_update' playlist.id %}" class="btn btn-secondary">Edit Playlist</a>
-        <a href="{% url 'playlist_delete' playlist.id %}" class="btn btn-danger">Delete Playlist</a>
-    </div>
-</div>
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-8 max-w-[1600px] mx-auto">
 
-<div class="playlist-detail-list" data-playlist-track-list data-player-queue aria-label="Playlist playback queue">
-    {% if playable_count %}
-        <div class="playlist-playback-toolbar">
-            <button type="button" class="btn btn-primary" data-player-play-all>
-                <span aria-hidden="true">▶</span> Play All ({{ playable_count }} playable)
-            </button>
+  <!-- Playlist Header Banner (Groovy Draft a8e076cc) -->
+  <section class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 md:p-12 mb-8 md:mb-10 shadow-2xl relative overflow-hidden">
+    <div class="flex flex-col md:flex-row items-center md:items-end gap-8 relative z-10">
+      
+      <!-- Artwork -->
+      <div class="w-48 h-48 md:w-56 md:h-56 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-900 to-purple-900 shrink-0 shadow-2xl border border-white/10 flex items-center justify-center">
+        {% if playlist.cover_image_url %}
+          <img src="{{ playlist.cover_image_url }}" alt="{{ playlist.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+        {% endif %}
+        <iconify-icon icon="lucide:library" class="text-6xl text-indigo-400"></iconify-icon>
+      </div>
+
+      <!-- Info & Actions -->
+      <div class="flex-1 min-w-0 text-center md:text-left space-y-4">
+        <div class="flex items-center justify-center md:justify-start gap-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full">
+            {% if playlist.is_public %}Public Playlist{% else %}Private Playlist{% endif %}
+          </span>
         </div>
-    {% elif tracks %}
-        <p class="audio-unavailable playlist-no-playable" role="status">This playlist has no available audio samples to play.</p>
-    {% endif %}
-    {% for track in tracks %}
-        <article class="card playlist-track" data-playlist-track data-song-id="{{ track.song_id }}">
-            <span class="playlist-track-position" data-track-position>{{ track.position }}</span>
-            <div class="playlist-track-main">
-                <a href="{% url 'song_detail' track.song.id %}" class="playlist-track-title">{{ track.song.title }}</a>
-                <div class="playlist-track-meta">
-                    <span>{% for artist in track.song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}</span>
-                    <span>{{ track.song.album_name|default:"Single / Standalone" }}</span>
-                    <span>{{ track.song.formatted_duration }}</span>
-                    {% if track.song.release_year %}<span>{{ track.song.release_year }}</span>{% endif %}
-                    {% for genre in track.song.genres.all %}<span class="badge-genre">{{ genre.name }}</span>{% endfor %}
-                </div>
+
+        <h1 class="text-3xl md:text-6xl font-black text-white tracking-tight truncate">
+          {{ playlist.title }}
+        </h1>
+
+        <p class="text-sm text-slate-300 max-w-2xl">
+          {{ playlist.description|default:"Curated private music playlist on Groovy." }}
+        </p>
+
+        <div class="flex items-center justify-center md:justify-start gap-3 text-xs font-semibold text-slate-400">
+          <span class="text-white">Curated by {{ playlist.owner.username }}</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+          <span><strong data-playlist-song-count class="text-white">{{ song_count }}</strong> track{{ song_count|pluralize }}</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+          {% if playable_count %}
+            <button type="button" data-player-play-all class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-8 py-3.5 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+              <iconify-icon icon="lucide:play" class="text-base"></iconify-icon>
+              <span>Play All ({{ playable_count }} playable)</span>
+            </button>
+          {% elif tracks %}
+            <span class="text-xs text-slate-400 font-semibold px-4 py-2.5 rounded-full bg-white/5 border border-white/5 flex items-center gap-2">
+              <iconify-icon icon="lucide:volume-x" class="text-slate-500"></iconify-icon>
+              <span>This playlist has no available audio samples to play.</span>
+            </span>
+          {% endif %}
+
+          <a href="{% url 'playlist_update' playlist.id %}" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs px-5 py-3 rounded-full flex items-center gap-2 transition-colors">
+            <iconify-icon icon="lucide:edit-3"></iconify-icon>
+            <span>Edit</span>
+          </a>
+
+          <a href="{% url 'playlist_delete' playlist.id %}" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs px-5 py-3 rounded-full flex items-center gap-2 transition-colors">
+            <iconify-icon icon="lucide:trash-2"></iconify-icon>
+            <span>Delete</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Tracklist Section -->
+  <div class="space-y-4" data-player-queue aria-label="Playlist playback queue">
+    <p class="text-[11px] text-slate-400 font-medium" data-playlist-page-feedback role="status" aria-live="polite"></p>
+
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-4 sm:p-6 shadow-xl" data-playlist-track-list>
+      
+      <!-- Table Header -->
+      <div class="grid grid-cols-12 gap-2 sm:gap-4 pb-4 mb-3 border-b border-white/5 text-[11px] font-extrabold uppercase tracking-widest text-slate-500 px-2 sm:px-3">
+        <span class="col-span-1 text-center">#</span>
+        <span class="col-span-8 sm:col-span-5">Title &amp; Artist</span>
+        <span class="col-span-3 hidden md:block">Album</span>
+        <span class="col-span-1 text-right hidden sm:block">Time</span>
+        <span class="col-span-3 sm:col-span-2 text-right">Actions</span>
+      </div>
+
+      <!-- Tracks Rows -->
+      {% for track in tracks %}
+        <div class="grid grid-cols-12 gap-2 sm:gap-4 items-center p-2.5 sm:p-3 rounded-2xl hover:bg-white/5 transition-all group" data-playlist-track data-song-id="{{ track.song_id }}">
+          
+          <!-- Position -->
+          <span class="col-span-1 text-center text-xs font-black text-slate-500 group-hover:text-indigo-400 font-mono" data-track-position>
+            {{ track.position }}
+          </span>
+
+          <!-- Title & Artist -->
+          <div class="col-span-8 sm:col-span-5 flex items-center gap-3 sm:gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl overflow-hidden bg-white/5 shrink-0 flex items-center justify-center">
+              {% if track.song.cover_image_url %}
+                <img src="{{ track.song.cover_image_url }}" alt="{{ track.song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+              {% endif %}
+              <iconify-icon icon="lucide:disc" class="text-indigo-400"></iconify-icon>
             </div>
-            <div class="playlist-track-actions">
-                {% with song=track.song %}
-                    {% include 'catalog/_playback_track_control.html' with song=song %}
-                {% endwith %}
-                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move>
-                    {% csrf_token %}<input type="hidden" name="action" value="move_up">
-                    <button type="submit" class="btn btn-secondary btn-sm" aria-label="Move {{ track.song.title }} up" {% if forloop.first %}disabled{% endif %}>Move Up</button>
-                </form>
-                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move>
-                    {% csrf_token %}<input type="hidden" name="action" value="move_down">
-                    <button type="submit" class="btn btn-secondary btn-sm" aria-label="Move {{ track.song.title }} down" {% if forloop.last %}disabled{% endif %}>Move Down</button>
-                </form>
-                <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-remove>
-                    {% csrf_token %}<input type="hidden" name="action" value="remove">
-                    <button type="submit" class="btn btn-danger btn-sm" aria-label="Remove {{ track.song.title }}">Remove</button>
-                </form>
+            <div class="min-w-0 flex-1">
+              <a href="{% url 'song_detail' track.song.id %}" class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate block">
+                {{ track.song.title }}
+              </a>
+              <p class="text-xs text-slate-400 truncate mt-0.5">
+                {% for artist in track.song.artists.all %}
+                  {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                  Unknown Artist
+                {% endfor %}
+                <span class="sr-only">{% for g in track.song.genres.all %}{{ g.name }} {% endfor %}</span>
+              </p>
             </div>
-        </article>
-    {% endfor %}
+          </div>
+
+          <!-- Album -->
+          <div class="col-span-3 hidden md:block min-w-0">
+            <span class="text-xs text-slate-400 truncate block">
+              {{ track.song.album_name|default:"Single / Standalone" }}
+            </span>
+          </div>
+
+          <!-- Duration -->
+          <div class="col-span-1 text-right hidden sm:block">
+            <span class="text-xs text-slate-500 font-mono">{{ track.song.formatted_duration }}</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-span-3 sm:col-span-2 flex items-center justify-end gap-1.5 sm:gap-2">
+            {% with audio_url=track.song.audio_url %}
+              {% if audio_url %}
+                <button type="button"
+                        data-player-track
+                        data-audio-url="{{ audio_url }}"
+                        data-track-title="{{ track.song.title }}"
+                        data-track-artist="{{ track.song.artists.all|join:', ' }}"
+                        data-track-album="{{ track.song.album_name }}"
+                        data-track-cover="{{ track.song.cover_image_url }}"
+                        class="text-indigo-400 hover:text-white p-1 hover:scale-110 transition-transform cursor-pointer"
+                        title="Play {{ track.song.title }}">
+                  <iconify-icon icon="lucide:play-circle" class="text-xl"></iconify-icon>
+                </button>
+              {% else %}
+                <span class="text-[10px] text-slate-500 font-medium px-2 py-0.5 rounded-md bg-white/5 border border-white/5 flex items-center gap-1 select-none" title="No audio sample attached">
+                  <iconify-icon icon="lucide:volume-x" class="text-xs text-slate-500"></iconify-icon>
+                  <span>No Audio<span class="sr-only">Audio sample not available</span></span>
+                </span>
+              {% endif %}
+            {% endwith %}
+
+            <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="move_up">
+              <button type="submit" class="text-slate-500 hover:text-white p-1 disabled:opacity-20 transition-colors" {% if forloop.first %}disabled{% endif %} title="Move Up">
+                <iconify-icon icon="lucide:chevron-up" class="text-base"></iconify-icon>
+              </button>
+            </form>
+
+            <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-move class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="move_down">
+              <button type="submit" class="text-slate-500 hover:text-white p-1 disabled:opacity-20 transition-colors" {% if forloop.last %}disabled{% endif %} title="Move Down">
+                <iconify-icon icon="lucide:chevron-down" class="text-base"></iconify-icon>
+              </button>
+            </form>
+
+            <form method="post" action="{% url 'playlist_song_action' playlist.id track.song_id %}" data-playlist-form data-track-delete class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="remove">
+              <button type="submit" class="text-slate-500 hover:text-rose-400 p-1 transition-colors" title="Remove track">
+                <iconify-icon icon="lucide:x" class="text-base"></iconify-icon>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      {% empty %}
+        <div class="p-12 text-center" data-playlist-empty>
+          <iconify-icon icon="lucide:music" class="text-4xl text-slate-600 mb-2"></iconify-icon>
+          <p class="text-sm font-bold text-white">This playlist is empty</p>
+          <p class="text-xs text-slate-500 mt-1">Browse the catalogue to add your favourite music tracks.</p>
+          <a href="{% url 'catalogue_browse' %}" class="inline-block mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-2.5 rounded-full transition-all">
+            Browse Music
+          </a>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
 </div>
-<div class="card playlist-empty-state" data-playlist-empty {% if tracks %}hidden{% endif %}>
-    <div class="playlist-empty-icon">♫</div>
-    <h2>This playlist is empty</h2>
-    <p>Open a song in the catalogue and add it to this playlist.</p>
-    <a href="{% url 'catalogue_browse' %}" class="btn btn-primary">Browse Music</a>
-</div>
-<p data-playlist-page-feedback role="status" aria-live="polite"></p>
-<p class="playlist-back-link"><a href="{% url 'catalogue_browse' %}">Browse more songs</a></p>
 {% endblock %}

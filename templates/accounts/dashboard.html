@@ -1,73 +1,149 @@
 {% extends 'base.html' %}
 
-{% block title %}Member Dashboard — Music App{% endblock %}
+{% block title %}Dashboard — Groovy{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 24px;">
-    <h2>Welcome back, {{ profile.display_name|default:user.username }}!</h2>
-    <p style="color: var(--text-secondary);">
-        Explore music, curate your playlists, and discover new songs.
-    </p>
-</div>
+<div class="px-4 sm:px-6 md:px-12 py-8 max-w-[1600px] mx-auto space-y-8">
+  
+  <!-- Welcome Banner -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:sparkles" class="text-indigo-400 text-3xl"></iconify-icon>
+        <span>Welcome back, {{ profile.display_name|default:user.username }}!</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">Your personal music overview and collection metrics</p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-full flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+        <iconify-icon icon="lucide:compass"></iconify-icon>
+        <span>Explore Music</span>
+      </a>
+      <a href="{% url 'playlist_create' %}" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs px-5 py-3 rounded-full flex items-center gap-2 transition-colors">
+        <iconify-icon icon="lucide:plus"></iconify-icon>
+        <span>New Playlist</span>
+      </a>
+    </div>
+  </div>
 
-<!-- Quick Metrics -->
-<div class="metrics-grid">
-    <div class="metric-card">
-        <div class="metric-label">My Playlists</div>
-        <div class="metric-value">{{ total_playlists }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">My Favourites</div>
-        <div class="metric-value">{{ total_favourites }}</div>
-    </div>
-    <div class="metric-card">
-        <div class="metric-label">Account Role</div>
-        <div style="margin-top: 10px;">
-            <span class="badge badge-member">MEMBER</span>
+  <!-- Quick Metrics Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">My Playlists</p>
+      <div class="flex items-center justify-between">
+        <span class="text-3xl font-black text-white font-mono">{{ total_playlists }}</span>
+        <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+          <iconify-icon icon="lucide:library" class="text-xl"></iconify-icon>
         </div>
+      </div>
     </div>
-</div>
 
-<div class="dashboard-columns">
-    <!-- My Recent Playlists -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-            <h3>My Playlists</h3>
-            <a href="{% url 'playlist_list' %}" class="btn btn-secondary btn-sm">Manage Playlists</a>
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">My Favourites</p>
+      <div class="flex items-center justify-between">
+        <span class="text-3xl font-black text-white font-mono">{{ total_favourites }}</span>
+        <div class="w-10 h-10 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400">
+          <iconify-icon icon="lucide:heart" class="text-xl"></iconify-icon>
         </div>
-        {% if playlists %}
-            <ul style="list-style: none; margin-top: 12px;">
-                {% for pl in playlists %}
-                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <a href="{% url 'playlist_detail' pl.id %}" style="color: #ffffff; font-weight: 600;">{{ pl.title }}</a><br>
-                            <small style="color: var(--text-secondary);">{{ pl.songs.count }} songs • {% if pl.is_public %}Public{% else %}Private{% endif %}</small>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p style="color: var(--text-secondary); margin-top: 12px; font-size: 14px;">You haven't created any playlists yet.</p>
-        {% endif %}
+      </div>
     </div>
 
-    <!-- My Recent Favourites -->
-    <div class="card">
-        <h3>Recent Favourites</h3>
-        {% if favourites %}
-            <ul style="list-style: none; margin-top: 12px;">
-                {% for fav in favourites %}
-                    <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #ffffff;">{{ fav.song.title }}</strong><br>
-                            <small style="color: var(--text-secondary);">Duration: {{ fav.song.duration_seconds }}s</small>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p style="color: var(--text-secondary); margin-top: 12px; font-size: 14px;">No favourite songs saved yet.</p>
-        {% endif %}
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-2">
+      <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Account Tier</p>
+      <div class="flex items-center justify-between">
+        <span class="text-lg font-black text-emerald-400 tracking-wider uppercase">
+          {{ user.profile.role|default:"MEMBER" }}
+        </span>
+        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+          <iconify-icon icon="lucide:shield-check" class="text-xl"></iconify-icon>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- 2-Column Dashboard Lists -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- My Playlists -->
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-black text-white flex items-center gap-2">
+          <iconify-icon icon="lucide:library" class="text-indigo-400"></iconify-icon>
+          <span>My Playlists</span>
+        </h2>
+        <a href="{% url 'playlist_list' %}" class="text-xs font-bold text-indigo-400 hover:text-white transition-colors">Manage all</a>
+      </div>
+
+      {% if playlists %}
+        <div class="space-y-3">
+          {% for pl in playlists %}
+            <a href="{% url 'playlist_detail' pl.id %}" class="flex items-center justify-between p-3.5 rounded-2xl hover:bg-white/5 transition-all group text-decoration-none">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-indigo-900 to-purple-900 shrink-0 flex items-center justify-center shadow-md">
+                  {% if pl.cover_image_url %}
+                    <img src="{{ pl.cover_image_url }}" alt="{{ pl.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                  {% endif %}
+                  <iconify-icon icon="lucide:library" class="text-indigo-400"></iconify-icon>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate">{{ pl.title }}</p>
+                  <p class="text-xs text-slate-500">{{ pl.songs.count }} track{{ pl.songs.count|pluralize }} • {% if pl.is_public %}Public{% else %}Private{% endif %}</p>
+                </div>
+              </div>
+              <iconify-icon icon="lucide:chevron-right" class="text-slate-500 group-hover:text-white transition-colors"></iconify-icon>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="p-8 text-center">
+          <p class="text-xs text-slate-500">You haven't created any playlists yet.</p>
+          <a href="{% url 'playlist_create' %}" class="inline-block mt-3 text-xs font-bold text-indigo-400 hover:underline">+ Create first playlist</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Recent Favourites -->
+    <div class="bg-[#141417] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-black text-white flex items-center gap-2">
+          <iconify-icon icon="lucide:heart" class="text-rose-500"></iconify-icon>
+          <span>Recent Favourites</span>
+        </h2>
+        <a href="{% url 'my_favourites' %}" class="text-xs font-bold text-indigo-400 hover:text-white transition-colors">View all</a>
+      </div>
+
+      {% if favourites %}
+        <div class="space-y-3">
+          {% for fav in favourites %}
+            <a href="{% url 'song_detail' fav.song.id %}" class="flex items-center justify-between p-3.5 rounded-2xl hover:bg-white/5 transition-all group text-decoration-none">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-11 h-11 rounded-xl overflow-hidden bg-white/5 shrink-0 flex items-center justify-center shadow-md">
+                  {% if fav.song.cover_image_url %}
+                    <img src="{{ fav.song.cover_image_url }}" alt="{{ fav.song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                  {% endif %}
+                  <iconify-icon icon="lucide:disc" class="text-indigo-400"></iconify-icon>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate">{{ fav.song.title }}</p>
+                  <p class="text-xs text-slate-500 truncate mt-0.5">
+                    {% for artist in fav.song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% empty %}Unknown Artist{% endfor %}
+                  </p>
+                </div>
+              </div>
+              <span class="text-xs text-slate-500 font-mono">{{ fav.song.formatted_duration }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="p-8 text-center">
+          <p class="text-xs text-slate-500">No favourite songs saved yet.</p>
+          <a href="{% url 'catalogue_browse' %}" class="inline-block mt-3 text-xs font-bold text-indigo-400 hover:underline">Explore catalogue</a>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}

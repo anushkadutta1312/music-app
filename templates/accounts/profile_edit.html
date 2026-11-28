@@ -1,51 +1,102 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Profile — Music App{% endblock %}
+{% block title %}Settings &amp; Edit Profile — Groovy{% endblock %}
 
 {% block content %}
-<div class="card card-auth">
-    <h2>Edit Profile</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
-        Update your public profile information.
-    </p>
+<div class="px-4 sm:px-6 md:px-12 py-10 max-w-2xl mx-auto space-y-8">
+  
+  <div class="mb-6 flex items-center justify-between">
+    <a href="{% url 'profile' %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+      <span>Back to Profile</span>
+    </a>
 
-    <form method="POST">
-        {% csrf_token %}
-
-        <div class="form-group">
-            <label for="assigned-role">Assigned Role (Server Protected)</label>
-            <input id="assigned-role" type="text" class="form-control" value="{{ profile.role }}" disabled style="opacity: 0.6; cursor: not-allowed;">
-            <div class="form-text">Your role cannot be modified. Role assignments are strictly enforced on the server.</div>
-        </div>
-
-        <div class="form-group">
-            <label for="id_display_name">Display Name</label>
-            {{ form.display_name }}
-            {% if form.display_name.errors %}
-                <div class="error-text">{{ form.display_name.errors.0 }}</div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="id_bio">Biography</label>
-            {{ form.bio }}
-            {% if form.bio.errors %}
-                <div class="error-text">{{ form.bio.errors.0 }}</div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="id_profile_image">Profile Avatar URL</label>
-            {{ form.profile_image }}
-            {% if form.profile_image.errors %}
-                <div class="error-text">{{ form.profile_image.errors.0 }}</div>
-            {% endif %}
-        </div>
-
-        <div style="display: flex; gap: 12px; margin-top: 20px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
-            <a href="{% url 'profile' %}" class="btn btn-secondary" style="flex: 1; text-align: center;">Cancel</a>
-        </div>
+    <!-- Log Out in Settings Header -->
+    <form method="POST" action="{% url 'logout' %}" class="inline">
+      {% csrf_token %}
+      <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
+        <iconify-icon icon="lucide:log-out"></iconify-icon>
+        <span>Log Out</span>
+      </button>
     </form>
+  </div>
+
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-6">
+    <div>
+      <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+        <iconify-icon icon="lucide:settings" class="text-indigo-400 text-3xl"></iconify-icon>
+        <span>Account Settings</span>
+      </h1>
+      <p class="text-xs text-slate-400 mt-1">Manage your public profile information and account session</p>
+    </div>
+
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- Assigned Role Box -->
+      <div class="p-4 rounded-2xl bg-[#0a0a0c] border border-white/5 space-y-1">
+        <span class="block text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Assigned Server Role</span>
+        <div class="flex items-center gap-2 pt-1">
+          <span class="text-xs font-bold text-indigo-400 font-mono">{{ profile.role }}</span>
+          <span class="text-[11px] text-slate-500">(Role enforcement is protected on the server)</span>
+        </div>
+      </div>
+
+      <!-- Display Name -->
+      <div class="space-y-1.5">
+        <label for="id_display_name" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Display Name</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+          {{ form.display_name }}
+        </div>
+        {% if form.display_name.errors %}<p class="text-[11px] text-rose-400">{{ form.display_name.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Bio -->
+      <div class="space-y-1.5">
+        <label for="id_bio" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Biography</label>
+        <div class="[&>textarea]:w-full [&>textarea]:bg-[#0a0a0c] [&>textarea]:border [&>textarea]:border-white/10 [&>textarea]:rounded-xl [&>textarea]:p-4 [&>textarea]:text-xs [&>textarea]:text-white [&>textarea]:focus:outline-none [&>textarea]:focus:border-indigo-500">
+          {{ form.bio }}
+        </div>
+        {% if form.bio.errors %}<p class="text-[11px] text-rose-400">{{ form.bio.errors.0 }}</p>{% endif %}
+      </div>
+
+      <!-- Profile Avatar URL -->
+      <div class="space-y-1.5">
+        <label for="id_profile_image" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Profile Avatar URL</label>
+        <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500">
+          {{ form.profile_image }}
+        </div>
+        {% if form.profile_image.errors %}<p class="text-[11px] text-rose-400">{{ form.profile_image.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="pt-6 border-t border-white/5 flex items-center justify-between">
+        <a href="{% url 'profile' %}" class="bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs py-3 px-6 rounded-xl transition-colors">
+          Cancel
+        </a>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 px-8 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+          <iconify-icon icon="lucide:check"></iconify-icon>
+          <span>Save Changes</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Danger Zone / Sign Out Box -->
+    <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-bold text-white">Sign Out of Session</p>
+        <p class="text-[11px] text-slate-500">Terminate your active session on this device</p>
+      </div>
+      <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon icon="lucide:log-out"></iconify-icon>
+          <span>Log Out</span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}

@@ -1,105 +1,166 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ song.title }} — Music App{% endblock %}
+{% block title %}{{ song.title }} — Groovy Player{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 20px;">
-    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">&larr; Back to Catalogue</a>
-</div>
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-10 max-w-[1200px] mx-auto" data-player-queue>
+  
+  <div class="mb-6 md:mb-8 flex items-center justify-between">
+    <a href="{% url 'catalogue_browse' %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+      <span>Back to Catalogue</span>
+    </a>
+    
+    {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+      <div class="flex items-center gap-2">
+        <a href="{% url 'song_update' song.id %}" class="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-3 sm:px-4 py-2 rounded-xl transition-all">
+          Edit Track
+        </a>
+        <a href="{% url 'song_delete' song.id %}" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs px-3 sm:px-4 py-2 rounded-xl transition-all">
+          Delete Track
+        </a>
+      </div>
+    {% endif %}
+  </div>
 
-<div class="card" style="display: flex; gap: 32px; flex-wrap: wrap;">
-    <div style="width: 220px; height: 220px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--border-color);">
-        {% if song.cover_image_url %}
-            <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <span style="font-size: 64px; color: var(--border-color); display: none;">🎵</span>
-        {% else %}
-            <span style="font-size: 64px; color: var(--border-color);">🎵</span>
-        {% endif %}
-    </div>
-
-    <div style="flex: 1; min-width: 280px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
-            <div>
-                <h1 style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">{{ song.title }}</h1>
-                <p style="font-size: 16px; color: var(--text-secondary);">
-                    By
-                    {% for sa in song_artists %}
-                        <a href="{% url 'artist_detail' sa.artist.id %}" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">
-                            {{ sa.artist.name }}
-                        </a>
-                        {% if sa.role and sa.role != 'Primary' %}
-                            <span class="badge" style="font-size: 10px; margin-left: 2px;">{{ sa.role }}</span>
-                        {% endif %}
-                        {% if not forloop.last %}, {% endif %}
-                    {% empty %}
-                        <span style="color: #64748b;">Unknown Artist</span>
-                    {% endfor %}
-                </p>
-                <div class="song-detail-playback" data-player-queue aria-label="Song playback">
-                    {% include 'catalog/_playback_track_control.html' with song=song %}
-                </div>
-            </div>
-            {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
-                <div style="display: flex; gap: 8px;">
-                    <a href="{% url 'song_update' song.id %}" class="btn btn-secondary btn-sm">Edit Song</a>
-                    <a href="{% url 'song_delete' song.id %}" class="btn btn-danger btn-sm">Delete</a>
-                </div>
-            {% endif %}
+  <!-- Main Player Display (Groovy Draft fd1ad58c) -->
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 md:p-14 shadow-2xl relative overflow-hidden">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+      
+      <!-- Left: Artwork with Ambient Glow & Animated Visualizer -->
+      <div class="flex flex-col items-center">
+        <div class="relative w-56 sm:w-72 md:w-88 aspect-square rounded-[2rem] overflow-hidden shadow-2xl album-glow border border-white/10 bg-[#0a0a0c] mb-6 md:mb-8 group">
+          {% if song.cover_image_url %}
+            <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=600';">
+          {% else %}
+            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=600" alt="Groovy Album Cover" class="w-full h-full object-cover">
+          {% endif %}
+          
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+            {% with audio_url=song.audio_url %}
+              {% if audio_url %}
+                <button type="button"
+                        data-player-track
+                        data-audio-url="{{ audio_url }}"
+                        data-track-title="{{ song.title }}"
+                        data-track-artist="{{ song.artists.all|join:', ' }}"
+                        data-track-album="{{ song.album_name }}"
+                        data-track-cover="{{ song.cover_image_url }}"
+                        class="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all">
+                  <iconify-icon icon="lucide:play" class="text-3xl ml-1"></iconify-icon>
+                </button>
+              {% endif %}
+            {% endwith %}
+          </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin: 20px 0; padding: 16px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
-            <div>
-                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Album</span>
-                <strong style="color: #ffffff;">{{ song.album_name|default:"Single / Standalone" }}</strong>
-            </div>
-            <div>
-                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Duration</span>
-                <strong style="color: #ffffff;">{{ song.formatted_duration }} ({{ song.duration_seconds }}s)</strong>
-            </div>
-            <div>
-                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Release Year</span>
-                <strong style="color: #ffffff;">{{ song.release_year|default:"—" }}</strong>
-            </div>
-            <div>
-                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); display: block;">Provider</span>
-                <strong style="color: #ffffff;">{{ song.external_provider|default:"Local" }}</strong>
-            </div>
-            <div style="margin-top: 12px;">
-                {% include 'profiles/_favourite_button.html' with song=song is_favourited=is_favourited %}
-            </div>
+        <!-- Animated Visualizer Bar Mockup -->
+        <div class="flex items-end gap-1.5 h-10 px-4">
+          <div class="w-1 bg-indigo-500 rounded-full h-6 animate-pulse"></div>
+          <div class="w-1 bg-purple-500 rounded-full h-9 animate-pulse delay-75"></div>
+          <div class="w-1 bg-indigo-400 rounded-full h-4 animate-pulse delay-100"></div>
+          <div class="w-1 bg-indigo-600 rounded-full h-8 animate-pulse delay-150"></div>
+          <div class="w-1 bg-purple-400 rounded-full h-5 animate-pulse delay-200"></div>
+          <div class="w-1 bg-indigo-500 rounded-full h-10 animate-pulse delay-75"></div>
+          <div class="w-1 bg-purple-600 rounded-full h-7 animate-pulse"></div>
+          <div class="w-1 bg-indigo-400 rounded-full h-3 animate-pulse delay-150"></div>
+          <div class="w-1 bg-indigo-500 rounded-full h-6 animate-pulse"></div>
         </div>
+      </div>
 
+      <!-- Right: Track Metadata & Controls -->
+      <div class="space-y-6">
         <div>
-            <span style="font-size: 12px; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 8px;">Genres</span>
-            <div>
-                {% for genre in song_genres %}
-                    <a href="{% url 'genre_detail' genre.id %}" class="badge-genre" style="text-decoration: none; font-size: 12px; padding: 4px 10px;">
-                        {{ genre.name }}
-                    </a>
-                {% empty %}
-                    <span style="color: #64748b; font-size: 13px;">No genres categorized.</span>
-                {% endfor %}
-            </div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full inline-block mb-3">
+            Now Playing Preview
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">
+            {{ song.title }}
+          </h1>
+          <div class="text-lg text-slate-300 font-semibold flex items-center gap-2">
+            {% for artist in song.artists.all %}
+              <a href="{% url 'artist_detail' artist.id %}" class="hover:text-indigo-400 transition-colors">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              Unknown Artist
+            {% endfor %}
+          </div>
         </div>
 
-        <div class="playlist-add-panel">
-            <h3>Add to a playlist</h3>
-            {% if owned_playlists %}
-                <form method="post" action="{% url 'playlist_add_song' song.id %}" data-playlist-form>
-                    {% csrf_token %}
-                    <label for="playlist-choice-{{ song.id }}">Choose one of your playlists</label>
-                    <select id="playlist-choice-{{ song.id }}" class="form-control" name="playlist_id" required>
-                        {% for playlist in owned_playlists %}
-                            <option value="{{ playlist.id }}">{{ playlist.title }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm">Add song</button>
-                    <span data-playlist-feedback role="status" aria-live="polite"></span>
-                </form>
-            {% else %}
-                <p>You do not have a playlist yet. <a href="{% url 'playlist_create' %}">Create one</a> to save this song.</p>
-            {% endif %}
+        <!-- Meta tags -->
+        <div class="flex flex-wrap items-center gap-2 pt-2">
+          {% if song.album_name %}
+            <span class="text-xs bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-slate-300 flex items-center gap-1.5">
+              <iconify-icon icon="lucide:disc" class="text-xs text-indigo-400"></iconify-icon>
+              <span>{{ song.album_name }}</span>
+            </span>
+          {% endif %}
+          {% if song.release_year %}
+            <span class="text-xs bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-slate-300 flex items-center gap-1.5">
+              <iconify-icon icon="lucide:calendar" class="text-xs text-slate-400"></iconify-icon>
+              <span>{{ song.release_year }}</span>
+            </span>
+          {% endif %}
+          <span class="text-xs bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-slate-300 flex items-center gap-1.5">
+            <iconify-icon icon="lucide:clock" class="text-xs text-slate-400"></iconify-icon>
+            <span>{{ song.formatted_duration }}</span>
+          </span>
+          {% for genre in song.genres.all %}
+            <span class="text-xs bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-xl text-indigo-300">
+              {{ genre.name }}
+            </span>
+          {% endfor %}
         </div>
+
+        <!-- Playback Actions -->
+        <div class="pt-4 flex items-center gap-4">
+          {% with audio_url=song.audio_url %}
+            {% if audio_url %}
+              <button type="button"
+                      data-player-track
+                      data-audio-url="{{ audio_url }}"
+                      data-track-title="{{ song.title }}"
+                      data-track-artist="{{ song.artists.all|join:', ' }}"
+                      data-track-album="{{ song.album_name }}"
+                      data-track-cover="{{ song.cover_image_url }}"
+                      class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-8 py-4 rounded-full flex items-center gap-3 shadow-xl shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+                <iconify-icon icon="lucide:play" class="text-xl"></iconify-icon>
+                <span>Play Track</span>
+              </button>
+            {% else %}
+              <div class="bg-white/5 border border-white/10 text-slate-400 font-semibold text-xs px-6 py-3.5 rounded-full">
+                Audio sample not available
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          {% if user.is_authenticated %}
+            {% if is_favourited %}
+              {% include 'profiles/_favourite_button.html' with song=song is_favourited=True %}
+            {% else %}
+              {% include 'profiles/_favourite_button.html' with song=song is_favourited=False %}
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <!-- Add to Playlist Box -->
+        {% if user.is_authenticated and owned_playlists %}
+          <div class="pt-6 border-t border-white/5">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Add this song to your playlist:</p>
+            <div class="flex items-center gap-3">
+              <a href="{% url 'playlist_add_song' song.id %}" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 transition-colors">
+                <iconify-icon icon="lucide:plus" class="text-base text-indigo-400"></iconify-icon>
+                <span>Choose Playlist</span>
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+
     </div>
+
+  </div>
+
 </div>
 {% endblock %}

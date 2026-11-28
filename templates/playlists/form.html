@@ -1,28 +1,60 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ page_title }} — Music App{% endblock %}
+{% block title %}{{ page_title }} — Groovy Playlists{% endblock %}
 
 {% block content %}
-<div class="form-page-wrap">
-    <div class="card">
-        <h1>{{ page_title }}</h1>
-        <p class="playlist-form-intro">Playlists are private to your account.</p>
-        <form method="post">
-            {% csrf_token %}
-            {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors }}</div>{% endif %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-                    {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
-                </div>
-            {% endfor %}
-            <div class="playlist-form-actions">
-                <a href="{% if playlist %}{% url 'playlist_detail' playlist.id %}{% else %}{% url 'playlist_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
-            </div>
-        </form>
-    </div>
+<div class="px-4 sm:px-6 md:px-12 py-10 max-w-2xl mx-auto">
+  
+  <div class="mb-6">
+    <a href="{% if playlist %}{% url 'playlist_detail' playlist.id %}{% else %}{% url 'playlist_list' %}{% endif %}" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+      <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+      <span>Cancel</span>
+    </a>
+  </div>
+
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+    <h1 class="text-3xl font-black text-white tracking-tight mb-2">{{ page_title }}</h1>
+    <p class="text-xs text-slate-400 mb-8">Curate and manage your custom music collection.</p>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="space-y-2">
+          <label for="{{ field.id_for_label }}" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+            {{ field.label }}
+          </label>
+          
+          <div class="[&>input]:w-full [&>input]:bg-[#0a0a0c] [&>input]:border [&>input]:border-white/10 [&>input]:rounded-xl [&>input]:py-2.5 [&>input]:px-4 [&>input]:text-xs [&>input]:text-white [&>input]:focus:outline-none [&>input]:focus:border-indigo-500 [&>textarea]:w-full [&>textarea]:bg-[#0a0a0c] [&>textarea]:border [&>textarea]:border-white/10 [&>textarea]:rounded-xl [&>textarea]:py-2.5 [&>textarea]:px-4 [&>textarea]:text-xs [&>textarea]:text-white [&>textarea]:focus:outline-none [&>textarea]:focus:border-indigo-500">
+            {{ field }}
+          </div>
+          
+          {% if field.help_text %}
+            <p class="text-[11px] text-slate-500">{{ field.help_text }}</p>
+          {% endif %}
+          
+          {% for error in field.errors %}
+            <p class="text-[11px] text-rose-400 font-medium">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="pt-4 flex items-center justify-end gap-3">
+        <a href="{% if playlist %}{% url 'playlist_detail' playlist.id %}{% else %}{% url 'playlist_list' %}{% endif %}" class="bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs py-3 px-6 rounded-xl transition-colors">
+          Cancel
+        </a>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 px-8 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+          {{ submit_label }}
+        </button>
+      </div>
+    </form>
+  </div>
+
 </div>
 {% endblock %}

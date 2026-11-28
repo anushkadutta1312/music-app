@@ -1,11 +1,16 @@
-<form class="favourite-form" method="post" action="{% url 'favourite_action' song.id %}" data-favourite-form {% if remove_card_on_unsave %}data-remove-card-on-unsave="true"{% endif %}>
+<form class="inline-flex items-center" method="post" action="{% url 'favourite_action' song.id %}" data-favourite-form {% if remove_card_on_unsave %}data-remove-card-on-unsave="true"{% endif %}>
     {% csrf_token %}
     {% if is_favourited %}
         <input type="hidden" name="action" value="remove">
-        <button type="submit" class="btn btn-secondary btn-sm" data-favourite-button aria-pressed="true">♥ Remove from favourites</button>
+        <button type="submit" class="p-2 rounded-xl text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all focus:outline-none" data-favourite-button aria-pressed="true" aria-label="Remove from favourites" title="Remove from favourites">
+            <svg class="w-5 h-5 text-rose-500 fill-current block pointer-events-none" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span class="sr-only">♥ Remove from favourites</span>
+        </button>
     {% else %}
         <input type="hidden" name="action" value="add">
-        <button type="submit" class="btn btn-primary btn-sm" data-favourite-button aria-pressed="false">♡ Add to favourites</button>
+        <button type="submit" class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-white/5 transition-all focus:outline-none" data-favourite-button aria-pressed="false" aria-label="Add to favourites" title="Add to favourites">
+            <svg class="w-5 h-5 text-slate-400 hover:text-rose-400 block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <span class="sr-only">♡ Add to favourites</span>
+        </button>
     {% endif %}
-    <span class="favourite-feedback" data-favourite-feedback role="status" aria-live="polite"></span>
 </form>

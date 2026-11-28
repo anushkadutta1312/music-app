@@ -1,43 +1,378 @@
 {% extends 'base.html' %}
 
-{% block title %}Music App — Welcome{% endblock %}
+{% block title %}Groovy — Home Discovery{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 800px; margin: 40px auto;">
-    <span class="badge badge-success">Music Discovery • Playlists • Sample Playback</span>
-    <h1 style="margin-top: 12px;">Music App</h1>
-    <p style="color: var(--text-secondary); margin-bottom: 20px;">
-        A database-driven Full Stack Music Discovery and Playlist Management Application.
-    </p>
-
-    <h3 style="margin-top: 20px;">Current Project Progress:</h3>
-    <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
-        <li><strong style="color: var(--text-primary);">Authentication &amp; User Roles:</strong> Completed. Secure registration, login, logout, and server-side role enforcement (<code>ADMIN</code> vs. <code>MEMBER</code>).</li>
-        <li><strong style="color: var(--text-primary);">Database Architecture:</strong> Completed and normalized (1NF, 2NF, 3NF) with 9 application tables and database-level constraints.</li>
-        <li><strong style="color: var(--text-primary);">Music Catalogue:</strong> Browse, search, and filter songs by artist and genre.</li>
-        <li><strong style="color: var(--text-primary);">Personal Collections:</strong> Save favourites and curate private playlists.</li>
-        <li><strong style="color: var(--text-primary);">Playback:</strong> Play credited sample tracks in the shared player.</li>
-        <li><strong style="color: var(--text-primary);">Project Status:</strong> Phases 1–12 are complete; final quality assurance is underway.</li>
-    </ul>
-
-    <h3 style="margin-top: 20px;">Configured Applications:</h3>
-    <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
-        <li><strong style="color: var(--text-primary);">accounts:</strong> User authentication, registration, login/logout, profile management, and role-based permissions.</li>
-        <li><strong style="color: var(--text-primary);">catalog:</strong> Artists, songs, genres, catalogue management, and search.</li>
-        <li><strong style="color: var(--text-primary);">playlists:</strong> Personal playlist curation, management, and track ordering.</li>
-        <li><strong style="color: var(--text-primary);">profiles:</strong> User profile information and favourite song bookmarks.</li>
-    </ul>
-
-    {% if not user.is_authenticated %}
-        <div class="home-actions" style="margin-top: 24px; display: flex; gap: 12px;">
-            <a href="{% url 'login' %}" class="btn btn-primary">Sign In</a>
-            <a href="{% url 'register' %}" class="btn btn-secondary">Create Account</a>
-        </div>
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-8 max-w-[1600px] mx-auto">
+  
+  <!-- Hero Banner (Groovy Modern Featured Card) -->
+  <section class="relative h-[360px] sm:h-[380px] md:h-[400px] w-full rounded-3xl overflow-hidden mb-8 md:mb-12 group shadow-2xl">
+    <!-- Background Artwork -->
+    {% if hero_song.cover_image_url %}
+      <img src="{{ hero_song.cover_image_url }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="{{ hero_song.title }}" onerror="this.src='https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1600';">
     {% else %}
-        <div class="home-actions" style="margin-top: 24px; display: flex; gap: 12px;">
-            <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
-            <a href="{% url 'profile' %}" class="btn btn-secondary">View Profile</a>
-        </div>
+      <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=1600" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Featured Artist">
     {% endif %}
+    
+    <!-- Seamless Full-Card Gradient Overlay & Content -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/75 to-black/20 md:bg-gradient-to-r md:from-[#0a0a0c] md:via-[#0a0a0c]/80 md:to-transparent flex flex-col justify-end md:justify-center p-6 sm:p-8 md:px-16" data-player-queue>
+      <div class="flex items-center gap-2 mb-2 sm:mb-3">
+        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+        <p class="text-indigo-400 text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase">FEATURED TRACK OF THE DAY</p>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-2 sm:mb-3 tracking-tight text-white line-clamp-2 md:line-clamp-1 drop-shadow-md">
+        {{ hero_song.title }}
+      </h1>
+      
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-5 md:mb-8 text-xs sm:text-sm">
+        <span class="text-base sm:text-xl md:text-2xl text-slate-200 font-semibold drop-shadow-sm">
+          {{ hero_song.artists.all|join:", "|default:"Featured Artist" }}
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        <span class="text-slate-300 font-medium">{{ hero_song.formatted_duration }}</span>
+        {% if hero_song.album_name %}
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 hidden sm:inline"></span>
+          <span class="text-slate-300 font-medium hidden sm:flex items-center gap-1.5">
+            <iconify-icon icon="lucide:disc" class="text-xs text-indigo-400"></iconify-icon>
+            {{ hero_song.album_name }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        {% if hero_song %}
+          {% with audio_url=hero_song.audio_url %}
+            {% if audio_url %}
+              <button type="button" 
+                      data-player-track
+                      data-audio-url="{{ audio_url }}"
+                      data-track-title="{{ hero_song.title }}"
+                      data-track-artist="{{ hero_song.artists.all|join:', ' }}"
+                      data-track-album="{{ hero_song.album_name }}"
+                      data-track-cover="{{ hero_song.cover_image_url }}"
+                      class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+                <iconify-icon icon="lucide:play" class="text-lg sm:text-xl"></iconify-icon>
+                <span>Listen Now</span>
+              </button>
+            {% else %}
+              <a href="{% url 'song_detail' hero_song.id %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all">
+                <iconify-icon icon="lucide:disc" class="text-lg sm:text-xl"></iconify-icon>
+                <span>View Track Details</span>
+              </a>
+            {% endif %}
+          {% endwith %}
+
+          {% if user.is_authenticated %}
+            {% if hero_song.id in favourited_song_ids %}
+              {% include 'profiles/_favourite_button.html' with song=hero_song is_favourited=True %}
+            {% else %}
+              {% include 'profiles/_favourite_button.html' with song=hero_song is_favourited=False %}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 sm:gap-3 shadow-lg shadow-indigo-600/30 transition-all">
+            <iconify-icon icon="lucide:compass" class="text-lg sm:text-xl"></iconify-icon>
+            <span>Explore Catalogue</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-Column Groovy Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
+    
+    <!-- Left 2 Columns: Artists, Charts & Curated Tracks -->
+    <div class="lg:col-span-2 space-y-12">
+      
+      <!-- Top Artists Section -->
+      <section id="top-artists">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <iconify-icon icon="lucide:mic-2" class="text-indigo-400 text-2xl"></iconify-icon>
+              <span>Top Artists</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Trending artists in your music collection</p>
+          </div>
+          <a href="{% url 'catalogue_browse' %}#artists" class="text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors">See all</a>
+        </div>
+
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-5">
+          {% for artist in popular_artists|slice:":6" %}
+            <a href="{% url 'artist_detail' artist.id %}" class="flex flex-col items-center gap-3 text-center group cursor-pointer text-decoration-none">
+              <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-white/5 bg-[#141417] shadow-lg group-hover:border-indigo-500/50 transition-all">
+                {% if artist.image_url %}
+                  <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed={{ artist.name|urlencode }}';">
+                {% else %}
+                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ artist.name|urlencode }}" alt="{{ artist.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                {% endif %}
+              </div>
+              <div class="w-full px-1">
+                <p class="text-xs font-bold text-white group-hover:text-indigo-400 transition-colors truncate">{{ artist.name }}</p>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5">{{ artist.song_count }} track{{ artist.song_count|pluralize }}</p>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Ready to Play Samples (Instant Sound Stream) -->
+      <section data-player-queue aria-label="Sample tracks queue">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <iconify-icon icon="lucide:headphones" class="text-indigo-400 text-2xl"></iconify-icon>
+              <span>Audio Samples Ready</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Full MP3 audio streams included in this clone</p>
+          </div>
+          <button type="button" data-player-play-all class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-md shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95">
+            <iconify-icon icon="lucide:play"></iconify-icon>
+            <span>Play All</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {% for track in sample_tracks %}
+            <div class="bg-[#141417] border border-white/5 hover:border-indigo-500/30 rounded-2xl p-4 flex flex-col justify-between group transition-all hover:bg-white/[0.03]">
+              <div class="flex items-center gap-3.5 mb-3">
+                <div class="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 flex items-center justify-center shadow-md">
+                  {% if track.cover_image_url %}
+                    <img src="{{ track.cover_image_url }}" alt="{{ track.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                  {% endif %}
+                  <iconify-icon icon="lucide:disc" class="text-indigo-400 text-xl"></iconify-icon>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <a href="{% url 'song_detail' track.id %}" class="text-sm font-bold text-white hover:text-indigo-400 transition-colors truncate block">
+                    {{ track.title }}
+                  </a>
+                  <p class="text-xs text-slate-400 truncate mt-0.5">
+                    {{ track.artists.all|join:", "|default:"Sample Artist" }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  Playable MP3
+                </span>
+                {% with audio_url=track.audio_url %}
+                  {% if audio_url %}
+                    <button type="button"
+                            data-player-track
+                            data-audio-url="{{ audio_url }}"
+                            data-track-title="{{ track.title }}"
+                            data-track-artist="{{ track.artists.all|join:', ' }}"
+                            data-track-album="{{ track.album_name }}"
+                            data-track-cover="{{ track.cover_image_url }}"
+                            class="w-8 h-8 rounded-full bg-white hover:bg-indigo-500 hover:text-white text-black flex items-center justify-center transition-all shadow-md">
+                      <iconify-icon icon="lucide:play" class="text-sm ml-0.5"></iconify-icon>
+                    </button>
+                  {% endif %}
+                {% endwith %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Top Charts Ranked List (Groovy Draft 5a7c7e0f) -->
+      <section data-player-queue aria-label="Top charts ranked tracks">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <iconify-icon icon="lucide:trending-up" class="text-indigo-400 text-2xl"></iconify-icon>
+              <span>Top Charts</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Most popular tracks in your library</p>
+          </div>
+          <a href="{% url 'catalogue_browse' %}" class="text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors">See all</a>
+        </div>
+
+        <div class="bg-[#141417] border border-white/5 rounded-3xl p-4 md:p-6 space-y-2">
+          {% for song in featured_songs|slice:":8" %}
+            <div class="flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-all group cursor-pointer">
+              <!-- Left: Rank, Cover & Title -->
+              <div class="flex items-center gap-4 min-w-0 flex-1">
+                <span class="text-xs font-black text-slate-500 w-5 text-center group-hover:text-indigo-400 font-mono">
+                  {{ forloop.counter|stringformat:"02d" }}
+                </span>
+                
+                <div class="w-11 h-11 rounded-xl overflow-hidden bg-white/5 shrink-0 relative flex items-center justify-center shadow-md">
+                  {% if song.cover_image_url %}
+                    <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                  {% endif %}
+                  <iconify-icon icon="lucide:music" class="text-indigo-400"></iconify-icon>
+                </div>
+                
+                <div class="min-w-0 flex-1">
+                  <a href="{% url 'song_detail' song.id %}" class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate block">
+                    {{ song.title }}
+                  </a>
+                  <p class="text-xs text-slate-400 truncate mt-0.5">
+                    {% for artist in song.artists.all %}
+                      <a href="{% url 'artist_detail' artist.id %}" class="hover:underline text-slate-400">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                      Unknown Artist
+                    {% endfor %}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right: Duration, Play & Favourite -->
+              <div class="flex items-center gap-4 md:gap-6 shrink-0 pl-4">
+                <span class="text-xs text-slate-500 font-mono font-medium hidden sm:inline">{{ song.formatted_duration }}</span>
+                
+                {% with audio_url=song.audio_url %}
+                  {% if audio_url %}
+                    <button type="button"
+                            data-player-track
+                            data-audio-url="{{ audio_url }}"
+                            data-track-title="{{ song.title }}"
+                            data-track-artist="{{ song.artists.all|join:', ' }}"
+                            data-track-album="{{ song.album_name }}"
+                            data-track-cover="{{ song.cover_image_url }}"
+                            class="text-indigo-400 hover:text-white p-1 hover:scale-110 transition-transform"
+                            title="Play {{ song.title }}">
+                      <iconify-icon icon="lucide:play-circle" class="text-2xl"></iconify-icon>
+                    </button>
+                  {% endif %}
+                {% endwith %}
+
+                {% if user.is_authenticated %}
+                  <a href="{% url 'playlist_add_song' song.id %}" class="text-slate-500 hover:text-white p-1 hover:scale-110 transition-transform" title="Add to Playlist">
+                    <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Featured Playlists Grid -->
+      <section>
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <iconify-icon icon="lucide:library" class="text-indigo-400 text-2xl"></iconify-icon>
+              <span>Featured Playlists</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Curated playlists created by music lovers</p>
+          </div>
+          <a href="{% url 'playlist_list' %}" class="text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors">See all</a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          {% for playlist in featured_playlists|slice:":4" %}
+            <a href="{% url 'playlist_detail' playlist.id %}" class="bg-[#141417] border border-white/5 hover:border-indigo-500/40 rounded-2xl p-4 flex flex-col group transition-all hover:bg-white/[0.03] text-decoration-none">
+              <div class="w-full aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-indigo-900/40 to-purple-900/40 mb-3 relative flex items-center justify-center shadow-md">
+                {% if playlist.cover_image_url %}
+                  <img src="{{ playlist.cover_image_url }}" alt="{{ playlist.title }}" class="w-full h-full object-cover transition-transform group-hover:scale-105" onerror="this.style.display='none';">
+                {% endif %}
+                <iconify-icon icon="lucide:library" class="text-3xl text-indigo-400/70"></iconify-icon>
+              </div>
+              <strong class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate block">
+                {{ playlist.title }}
+              </strong>
+              <p class="text-xs text-slate-500 mt-1">
+                {{ playlist.song_count }} track{{ playlist.song_count|pluralize }} • {{ playlist.owner.username }}
+              </p>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Right Column: Groovy Dedicated Player Widget (Compact Responsive Layout) -->
+    <div class="col-span-1">
+      <div class="bg-[#141417] rounded-[2.5rem] p-6 border border-white/5 sticky top-24 shadow-2xl space-y-5" data-live-card-player>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <h3 class="text-xs font-black tracking-tight text-white uppercase">Player Live</h3>
+          </div>
+          <iconify-icon icon="lucide:list-music" class="text-slate-500 hover:text-white cursor-pointer text-lg"></iconify-icon>
+        </div>
+
+        <!-- Player Artwork Box (Compact & Scaled) -->
+        <div class="text-center space-y-4">
+          <div class="relative w-48 h-48 md:w-56 md:h-56 mx-auto rounded-3xl overflow-hidden shadow-2xl group border border-white/10 bg-[#0a0a0c]">
+            {% if hero_song.cover_image_url %}
+              <img data-live-artwork src="{{ hero_song.cover_image_url }}" alt="{{ hero_song.title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=600';">
+            {% else %}
+              <img data-live-artwork src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=600" alt="Groovy Player Artwork" class="w-full h-full object-cover">
+            {% endif %}
+            
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <button type="button"
+                      data-live-toggle
+                      aria-label="Play / Pause"
+                      class="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all">
+                <iconify-icon icon="lucide:play" class="text-2xl ml-0.5"></iconify-icon>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 data-live-title class="text-xl font-black text-white truncate px-2">{{ hero_song.title }}</h4>
+            <p data-live-artist class="text-slate-400 text-xs font-semibold mt-0.5 truncate px-2">{{ hero_song.artists.all|join:", "|default:"Featured Artist" }}</p>
+            <p class="text-[9px] text-indigo-400 font-extrabold tracking-widest mt-1.5 uppercase">GROOVY EXCLUSIVE</p>
+          </div>
+        </div>
+
+        <!-- Progress Bar (Visible Glowing Gradient Fill) -->
+        <div class="space-y-1.5 px-1">
+          <div class="flex justify-between text-[11px] font-bold text-slate-400 font-mono">
+            <span data-live-current-time>0:00</span>
+            <span data-live-duration>{{ hero_song.formatted_duration }}</span>
+          </div>
+          <div class="h-2 w-full bg-white/10 hover:bg-white/15 rounded-full relative overflow-hidden cursor-pointer transition-colors" data-live-seek title="Click to seek">
+            <div data-live-progress class="absolute left-0 top-0 h-full w-0 bg-gradient-to-r from-indigo-500 via-indigo-400 to-purple-500 rounded-full shadow-[0_0_12px_rgba(99,102,241,0.9)] transition-all duration-75"></div>
+          </div>
+        </div>
+
+        <!-- Groovy Indigo Controls Pill (Fits comfortably on screen) -->
+        <div class="bg-indigo-600 rounded-2xl p-4 flex items-center justify-between shadow-xl shadow-indigo-600/30">
+          <button type="button" class="text-indigo-200 hover:text-white transition-colors p-1" title="Repeat">
+            <iconify-icon icon="lucide:repeat" class="text-lg"></iconify-icon>
+          </button>
+          
+          <button type="button" data-live-previous class="text-white hover:scale-110 active:scale-90 transition-transform p-1" title="Previous Track">
+            <iconify-icon icon="lucide:skip-back" class="text-lg"></iconify-icon>
+          </button>
+          
+          <button type="button"
+                  data-live-toggle
+                  aria-label="Play / Pause"
+                  class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all text-indigo-600"
+                  title="Play / Pause">
+            <iconify-icon icon="lucide:play" class="text-xl ml-0.5"></iconify-icon>
+          </button>
+
+          <button type="button" data-live-next class="text-white hover:scale-110 active:scale-90 transition-transform p-1" title="Next Track">
+            <iconify-icon icon="lucide:skip-forward" class="text-lg"></iconify-icon>
+          </button>
+          
+          <button type="button" class="text-indigo-200 hover:text-white transition-colors p-1" title="Shuffle">
+            <iconify-icon icon="lucide:shuffle" class="text-lg"></iconify-icon>
+          </button>
+        </div>
+
+        <a href="{% url 'catalogue_browse' %}" class="w-full flex items-center justify-center gap-2 text-[11px] font-bold text-slate-400 hover:text-white transition-colors uppercase tracking-widest pt-1 text-decoration-none">
+          <iconify-icon icon="lucide:compass"></iconify-icon>
+          <span>Explore All 60 Songs</span>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}

@@ -1,44 +1,68 @@
 {% extends 'base.html' %}
 
-{% block title %}My Profile — Music App{% endblock %}
+{% block title %}My Profile — Groovy{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 700px; margin: 20px auto;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-            <h2>{{ profile.display_name|default:user.username }}</h2>
-            <p style="color: var(--text-secondary); font-size: 14px;">@{{ user.username }} • Joined {{ user.date_joined|date:"M d, Y" }}</p>
+<div class="px-4 sm:px-6 md:px-12 py-10 max-w-3xl mx-auto space-y-8">
+  
+  <div class="bg-[#141417] border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+      <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-2xl shadow-xl shrink-0">
+        {{ user.username|make_list|first|upper }}
+      </div>
+
+      <div class="flex-1 min-w-0 text-center sm:text-left space-y-1">
+        <h1 class="text-2xl font-black text-white tracking-tight">{{ profile.display_name|default:user.username }}</h1>
+        <p class="text-xs text-slate-400 font-mono">@{{ user.username }} • Joined {{ user.date_joined|date:"M d, Y" }}</p>
+        <div class="pt-2">
+          {% if profile.role == 'ADMIN' %}
+            <span class="text-[10px] font-extrabold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
+              ADMINISTRATOR
+            </span>
+          {% else %}
+            <span class="text-[10px] font-extrabold text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1 rounded-full uppercase tracking-wider">
+              MEMBER
+            </span>
+          {% endif %}
         </div>
-        <div>
-            {% if profile.role == 'ADMIN' %}
-                <span class="badge badge-admin">ADMINISTRATOR</span>
-            {% else %}
-                <span class="badge badge-member">MEMBER</span>
-            {% endif %}
-        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+        <a href="{% url 'profile_edit' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+          <iconify-icon icon="lucide:settings"></iconify-icon>
+          <span>Edit Profile</span>
+        </a>
+        <form method="POST" action="{% url 'logout' %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs px-5 py-2.5 rounded-xl border border-rose-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+            <iconify-icon icon="lucide:log-out"></iconify-icon>
+            <span>Log Out</span>
+          </button>
+        </form>
+      </div>
     </div>
 
-    <div style="margin: 24px 0; padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
-        <h4 style="margin-bottom: 8px; color: #ffffff;">About Me</h4>
-        <p style="color: var(--text-secondary); font-size: 14px;">
-            {{ profile.bio|default:"No bio provided yet." }}
-        </p>
+    <!-- About Me -->
+    <div class="p-6 rounded-2xl bg-[#0a0a0c] border border-white/5 space-y-2">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">About Me</h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        {{ profile.bio|default:"No bio provided yet." }}
+      </p>
     </div>
 
-    <div class="metrics-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
-        <div class="metric-card">
-            <div class="metric-label">Playlists Created</div>
-            <div class="metric-value">{{ playlist_count }}</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-label">Favourite Songs</div>
-            <div class="metric-value">{{ favourite_count }}</div>
-        </div>
-    </div>
+    <!-- Metrics -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="p-6 rounded-2xl bg-[#0a0a0c] border border-white/5 space-y-1">
+        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Playlists Created</p>
+        <p class="text-2xl font-black text-white font-mono">{{ playlist_count }}</p>
+      </div>
 
-    <div style="display: flex; gap: 12px;">
-        <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+      <div class="p-6 rounded-2xl bg-[#0a0a0c] border border-white/5 space-y-1">
+        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Favourite Songs</p>
+        <p class="text-2xl font-black text-white font-mono">{{ favourite_count }}</p>
+      </div>
     </div>
+  </div>
+
 </div>
 {% endblock %}

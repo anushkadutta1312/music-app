@@ -1,158 +1,309 @@
 {% extends 'base.html' %}
 
-{% block title %}Browse Catalogue — Music App{% endblock %}
+{% block title %}Explore Catalogue — Groovy{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-    <div>
-        <h2 style="font-size: 24px; font-weight: 700; color: #ffffff;">🎵 Music Catalogue</h2>
-        <p style="color: var(--text-secondary); font-size: 14px;">
-            Explore songs, albums, artists, and music genres in the library.
-        </p>
-    </div>
-    {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
-        <div>
-            <a href="{% url 'catalogue_manage' %}" class="btn btn-secondary">⚙️ Catalogue Management</a>
-            <a href="{% url 'song_create' %}" class="btn btn-primary">+ Add New Song</a>
-        </div>
-    {% endif %}
-</div>
+<div class="px-4 sm:px-6 md:px-12 py-6 md:py-8 max-w-[1600px] mx-auto">
 
-<!-- Search & Filter Controls -->
-<div class="filter-card">
-    <form method="GET" action="{% url 'catalogue_browse' %}">
-        <div class="filter-grid">
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="id_q" style="font-size: 11px;">Search Catalogue</label>
-                {{ filter_form.q }}
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="id_genre" style="font-size: 11px;">Filter Genre</label>
-                {{ filter_form.genre }}
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="id_artist" style="font-size: 11px;">Filter Artist</label>
-                {{ filter_form.artist }}
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary" style="height: 42px; width: 100%;">Filter</button>
-            </div>
-            {% if has_active_filters %}
-                <div>
-                    <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary" style="height: 42px; width: 100%; display: flex; align-items: center; justify-content: center;">Clear</a>
-                </div>
-            {% endif %}
+  <!-- Featured Collection Banner (Draft 37392f66) -->
+  <section class="relative h-[260px] md:h-[320px] w-full rounded-[2.5rem] overflow-hidden mb-8 md:mb-12 group shadow-2xl">
+    <img src="https://images.unsplash.com/photo-1514525253361-bee8718a340b?auto=format&fit=crop&q=80&w=1600" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Featured Collection">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 md:p-12">
+      <span class="bg-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-2 sm:mb-3 tracking-widest uppercase shadow-md shadow-indigo-600/30">
+        Editor's Choice
+      </span>
+      <h1 class="text-2xl sm:text-3xl md:text-5xl font-black mb-2 tracking-tight text-white">
+        Explore Music Catalogue
+      </h1>
+      <p class="text-slate-300 max-w-xl text-xs sm:text-sm mb-4 sm:mb-6 line-clamp-2">
+        Discover over 60 hand-curated tracks spanning Acoustic, Rock, Pop, Hip-Hop, Classical, Electronic, and Jazz.
+      </p>
+      <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+        <a href="#genres-section" class="bg-white hover:bg-slate-200 text-black px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-white/10">
+          <iconify-icon icon="lucide:sparkles" class="text-base"></iconify-icon>
+          <span>Browse Genres</span>
+        </a>
+        {% if user.profile.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+          <a href="{% url 'catalogue_manage' %}" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs flex items-center gap-2 transition-all">
+            <iconify-icon icon="lucide:settings" class="text-base"></iconify-icon>
+            <span class="hidden sm:inline">Catalogue Management</span>
+            <span class="sm:hidden">Manage</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Browse All Genres (Draft 37392f66) -->
+  <section class="mb-12" id="genres-section">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+          <iconify-icon icon="lucide:palette" class="text-indigo-400 text-2xl"></iconify-icon>
+          <span>Browse All Genres</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Filter songs instantly by musical vibe</p>
+      </div>
+      {% if has_active_filters %}
+        <a href="{% url 'catalogue_browse' %}" class="text-xs font-bold text-indigo-400 hover:text-white transition-colors">Reset All Filters</a>
+      {% endif %}
+    </div>
+
+    <!-- 6 Vivid Gradient Genre Cards with Real Database IDs -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      {% for genre in genres|slice:":6" %}
+        <a href="{% url 'catalogue_browse' %}?genre={{ genre.id }}" class="h-28 rounded-2xl {% cycle 'bg-gradient-to-br from-indigo-500 to-blue-700' 'bg-gradient-to-br from-rose-500 to-purple-700' 'bg-gradient-to-br from-amber-500 to-orange-700' 'bg-gradient-to-br from-emerald-500 to-teal-700' 'bg-gradient-to-br from-cyan-500 to-blue-800' 'bg-gradient-to-br from-fuchsia-500 to-pink-700' %} p-4 relative overflow-hidden group cursor-pointer shadow-lg hover:scale-[1.03] transition-all text-decoration-none {% if selected_genre_id == genre.id|stringformat:'s' %}ring-2 ring-white ring-offset-2 ring-offset-[#0a0a0c]{% endif %}">
+          <span class="text-base font-black text-white relative z-10 block">{{ genre.name }}</span>
+          <iconify-icon icon="{% cycle 'lucide:disc' 'lucide:star' 'lucide:mic' 'lucide:guitar' 'lucide:music' 'lucide:headphones' %}" class="absolute -right-2 -bottom-2 text-6xl text-white/20 rotate-12 group-hover:scale-110 transition-transform"></iconify-icon>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Filter Bar -->
+  <div class="bg-[#141417] border border-white/5 rounded-2xl p-5 mb-10 shadow-lg">
+    <form method="GET" action="{% url 'catalogue_browse' %}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+      <!-- Search Input -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Search Library</label>
+        <div class="relative">
+          <iconify-icon icon="lucide:search" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></iconify-icon>
+          <input type="text" name="q" value="{{ q_query }}" placeholder="Song, artist, or album..." class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
         </div>
+      </div>
+
+      <!-- Genre Select -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Genre</label>
+        <select name="genre" onchange="this.form.submit()" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+          <option value="">All Genres</option>
+          {% for genre in genres %}
+            <option value="{{ genre.id }}" {% if selected_genre_id == genre.id|stringformat:"s" %}selected{% endif %}>{{ genre.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Artist Select -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Artist</label>
+        <select name="artist" onchange="this.form.submit()" class="w-full bg-[#0a0a0c] border border-white/10 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+          <option value="">All Artists</option>
+          {% for artist in artists %}
+            <option value="{{ artist.id }}" {% if selected_artist_id == artist.id|stringformat:"s" %}selected{% endif %}>{{ artist.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2 px-4 rounded-xl transition-all shadow-md shadow-indigo-600/20">
+          Filter
+        </button>
+        {% if has_active_filters %}
+          <a href="{% url 'catalogue_browse' %}" class="bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-xs py-2 px-4 rounded-xl border border-white/5 transition-colors">
+            Clear
+          </a>
+        {% endif %}
+      </div>
     </form>
-</div>
+  </div>
 
-<!-- Filter Results Summary -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <div style="color: var(--text-secondary); font-size: 14px;">
-        Showing <strong>{{ songs|length }}</strong> of <strong>{{ total_results }}</strong> track{{ total_results|pluralize }}
-        {% if q_query %} matching "<em>{{ q_query }}</em>"{% endif %}
-    </div>
-    <div style="font-size: 13px; color: var(--text-secondary);">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </div>
-</div>
-
-<!-- Songs Grid -->
-{% if songs %}
-    <div class="music-grid" data-player-queue aria-label="Catalogue page playback queue">
-        {% for song in songs %}
-            <div class="song-card">
-                <div class="song-card-cover">
-                    {% if song.cover_image_url %}
-                        <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <span class="song-card-placeholder" style="display: none;">🎵</span>
-                    {% else %}
-                        <span class="song-card-placeholder">🎵</span>
-                    {% endif %}
-                    <span class="song-card-duration">{{ song.formatted_duration }}</span>
-                </div>
-                <div class="song-card-body">
-                    <a href="{% url 'song_detail' song.id %}" class="song-card-title">{{ song.title }}</a>
-                    
-                    <div class="song-card-artist">
-                        {% for artist in song.artists.all %}
-                            <a href="{% url 'artist_detail' artist.id %}" style="color: var(--text-secondary); text-decoration: none;">
-                                {{ artist.name }}
-                            </a>{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                            <span style="color: #64748b;">Unknown Artist</span>
-                        {% endfor %}
-                    </div>
-
-                    {% if song.album_name %}
-                        <div class="song-card-album">
-                            💽 {{ song.album_name }}{% if song.release_year %} ({{ song.release_year }}){% endif %}
-                        </div>
-                    {% elif song.release_year %}
-                        <div class="song-card-album">
-                            📅 {{ song.release_year }}
-                        </div>
-                    {% endif %}
-
-                    <div class="song-card-genres">
-                        {% for genre in song.genres.all %}
-                            <a href="{% url 'genre_detail' genre.id %}" class="badge-genre" style="text-decoration: none;">
-                                {{ genre.name }}
-                            </a>
-                        {% endfor %}
-                    </div>
-                    <div class="song-card-playback">
-                        {% include 'catalog/_playback_track_control.html' with song=song %}
-                    </div>
-                    {% if song.id in favourited_song_ids %}
-                        {% include 'profiles/_favourite_button.html' with song=song is_favourited=True %}
-                    {% else %}
-                        {% include 'profiles/_favourite_button.html' with song=song is_favourited=False %}
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Pagination Controls (Preserves GET parameters) -->
-    {% if page_obj.paginator.num_pages > 1 %}
-        <div class="pagination-container">
-            <div>
-                {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}{{ pagination_params }}" class="page-btn">&larr; Previous</a>
-                {% else %}
-                    <span class="page-btn disabled">&larr; Previous</span>
-                {% endif %}
-            </div>
-
-            <div class="pagination-links">
-                {% for p in page_obj.paginator.page_range %}
-                    {% if p == page_obj.number %}
-                        <span class="page-btn active">{{ p }}</span>
-                    {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
-                        <a href="?page={{ p }}{{ pagination_params }}" class="page-btn">{{ p }}</a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div>
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{{ pagination_params }}" class="page-btn">Next &rarr;</a>
-                {% else %}
-                    <span class="page-btn disabled">Next &rarr;</span>
-                {% endif %}
-            </div>
+  <!-- Content Grid: Left Tracks (2 cols) + Right Spotlight (1 col) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    
+    <!-- Left 2 Cols: Songs List (Draft 37392f66) -->
+    <div class="lg:col-span-2 space-y-4" data-player-queue aria-label="Catalogue song library queue">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <h2 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+            <iconify-icon icon="lucide:music-2" class="text-indigo-400 text-xl"></iconify-icon>
+            <span>Catalogue Songs</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Showing {{ songs|length }} of {{ total_results }} track{{ total_results|pluralize }}
+            {% if q_query %} matching "<em>{{ q_query }}</em>"{% endif %}
+          </p>
         </div>
-    {% endif %}
+        <span class="text-xs font-semibold text-slate-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      </div>
 
-{% else %}
-    <div class="card" style="text-align: center; padding: 48px 24px;">
-        <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
-        <h3>No songs found</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">
-            We could not find any songs matching your search or filter criteria.
-        </p>
-        <a href="{% url 'catalogue_browse' %}" class="btn btn-secondary">Reset Filters</a>
+      {% if songs %}
+        <div class="space-y-3">
+          {% for song in songs %}
+            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#141417] border border-white/5 hover:border-indigo-500/30 hover:bg-white/[0.03] transition-all group cursor-pointer shadow-md">
+              <!-- Left Details -->
+              <div class="flex items-center gap-4 min-w-0 flex-1">
+                <div class="relative w-12 h-12 rounded-xl overflow-hidden bg-white/5 shrink-0 flex items-center justify-center shadow-md">
+                  {% if song.cover_image_url %}
+                    <img src="{{ song.cover_image_url }}" alt="{{ song.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                  {% endif %}
+                  <iconify-icon icon="lucide:disc" class="text-indigo-400 text-xl"></iconify-icon>
+                </div>
+                
+                <div class="min-w-0 flex-1">
+                  <a href="{% url 'song_detail' song.id %}" class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors truncate block">
+                    {{ song.title }}
+                  </a>
+                  <p class="text-xs text-slate-400 truncate mt-0.5">
+                    {% for artist in song.artists.all %}
+                      <a href="{% url 'artist_detail' artist.id %}" class="hover:underline text-slate-400">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                      Unknown Artist
+                    {% endfor %}
+                    {% if song.album_name %}
+                      <span class="text-slate-500"> • {{ song.album_name }}</span>
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right: Duration, Audio Play, Favourites & Add to Playlist -->
+              <div class="flex items-center gap-2 sm:gap-4 shrink-0 pl-2 sm:pl-4">
+                <span class="text-xs text-slate-500 font-mono font-medium hidden sm:inline">{{ song.formatted_duration }}</span>
+                
+                {% with audio_url=song.audio_url %}
+                  {% if audio_url %}
+                    <button type="button"
+                            data-player-track
+                            data-audio-url="{{ audio_url }}"
+                            data-track-title="{{ song.title }}"
+                            data-track-artist="{{ song.artists.all|join:', ' }}"
+                            data-track-album="{{ song.album_name }}"
+                            data-track-cover="{{ song.cover_image_url }}"
+                            class="w-9 h-9 rounded-full bg-indigo-600/20 hover:bg-indigo-600 text-indigo-400 hover:text-white flex items-center justify-center transition-all shadow-md"
+                            title="Play {{ song.title }}">
+                      <iconify-icon icon="lucide:play" class="text-base ml-0.5"></iconify-icon>
+                    </button>
+                  {% else %}
+                    <span class="sr-only">Audio sample not available</span>
+                  {% endif %}
+                {% endwith %}
+
+                {% if user.is_authenticated %}
+                  <a href="{% url 'playlist_add_song' song.id %}" class="text-slate-500 hover:text-white p-1 hover:scale-110 transition-transform" title="Add to Playlist">
+                    <iconify-icon icon="lucide:plus" class="text-lg"></iconify-icon>
+                  </a>
+
+                  {% if song.id in favourited_song_ids %}
+                    {% include 'profiles/_favourite_button.html' with song=song is_favourited=True %}
+                  {% else %}
+                    {% include 'profiles/_favourite_button.html' with song=song is_favourited=False %}
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination Bar -->
+        {% if page_obj.paginator.num_pages > 1 %}
+          <div class="flex items-center justify-between pt-6 border-t border-white/5">
+            <div>
+              {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{{ pagination_params }}" class="bg-white/5 hover:bg-white/10 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors">
+                  &larr; Previous
+                </a>
+              {% else %}
+                <span class="opacity-30 bg-white/5 text-slate-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed">
+                  &larr; Previous
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              {% for p in page_obj.paginator.page_range %}
+                {% if p == page_obj.number %}
+                  <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
+                    {{ p }}
+                  </span>
+                {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+                  <a href="?page={{ p }}{{ pagination_params }}" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs flex items-center justify-center transition-colors">
+                    {{ p }}
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <div>
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{{ pagination_params }}" class="bg-white/5 hover:bg-white/10 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors">
+                  Next &rarr;
+                </a>
+              {% else %}
+                <span class="opacity-30 bg-white/5 text-slate-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed">
+                  Next &rarr;
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+      {% else %}
+        <div class="bg-[#141417] border border-white/5 rounded-3xl p-12 text-center">
+          <iconify-icon icon="lucide:music" class="text-5xl text-slate-600 mb-3"></iconify-icon>
+          <h3 class="text-xl font-bold text-white mb-2">No songs found</h3>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto mb-6">
+            We couldn't find any songs matching your search or filters. Try adjusting your search query.
+          </p>
+          <a href="{% url 'catalogue_browse' %}" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-2.5 rounded-full inline-block transition-all">
+            Reset Filters
+          </a>
+        </div>
+      {% endif %}
     </div>
-{% endif %}
+
+    <!-- Right 1 Col: Artist Spotlight & Curated Playlists (Draft 37392f66) -->
+    <div class="col-span-1 space-y-8">
+      
+      <!-- Artist to Watch Spotlight -->
+      {% if spotlight_artist %}
+        <section class="p-6 rounded-[2rem] bg-indigo-600/10 border border-indigo-500/20 text-center shadow-xl">
+          <p class="text-[10px] font-bold text-indigo-400 tracking-widest uppercase mb-4">Artist to Watch</p>
+          <div class="relative w-28 h-28 mx-auto mb-4">
+            {% if spotlight_artist.image_url %}
+              <img src="{{ spotlight_artist.image_url }}" alt="{{ spotlight_artist.name }}" class="w-full h-full rounded-full object-cover border-4 border-indigo-500/30 p-1 shadow-xl" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed={{ spotlight_artist.name|urlencode }}';">
+            {% else %}
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ spotlight_artist.name|urlencode }}" alt="{{ spotlight_artist.name }}" class="w-full h-full rounded-full object-cover border-4 border-indigo-500/30 p-1 shadow-xl">
+            {% endif %}
+            <div class="absolute bottom-0 right-0 w-7 h-7 bg-indigo-500 rounded-full flex items-center justify-center border-2 border-[#12121e]">
+              <iconify-icon icon="lucide:check" class="text-white text-xs"></iconify-icon>
+            </div>
+          </div>
+          <h3 class="text-xl font-black text-white mb-1">{{ spotlight_artist.name }}</h3>
+          <p class="text-slate-400 text-xs font-medium mb-4">{{ spotlight_artist.song_count }} songs in library</p>
+          <a href="{% url 'artist_detail' spotlight_artist.id %}" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 px-4 rounded-xl block transition-all shadow-md shadow-indigo-600/30">
+            View Artist Profile
+          </a>
+        </section>
+      {% endif %}
+
+      <!-- Curated Playlists Card -->
+      <section class="p-6 rounded-[2rem] bg-[#141417] border border-white/5 shadow-xl space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Top Playlists</h3>
+          <a href="{% url 'playlist_list' %}" class="text-[11px] font-bold text-indigo-400 hover:text-white">All</a>
+        </div>
+        <div class="space-y-3">
+          {% for pl in curated_playlists %}
+            <a href="{% url 'playlist_detail' pl.id %}" class="flex items-center gap-3.5 p-2 rounded-xl hover:bg-white/5 transition-all group text-decoration-none">
+              <div class="w-11 h-11 rounded-lg overflow-hidden bg-gradient-to-br from-indigo-900 to-purple-900 shrink-0 flex items-center justify-center shadow-md">
+                {% if pl.cover_image_url %}
+                  <img src="{{ pl.cover_image_url }}" alt="{{ pl.title }}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                {% endif %}
+                <iconify-icon icon="lucide:library" class="text-indigo-400"></iconify-icon>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-bold text-white group-hover:text-indigo-400 transition-colors truncate">{{ pl.title }}</p>
+                <p class="text-[10px] text-slate-500">{{ pl.song_count }} tracks • {{ pl.owner.username }}</p>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+</div>
 {% endblock %}
